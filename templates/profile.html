@@ -1,110 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Profile | Space X{% endblock %}
 {% block content %}
-<div class="sx-profile-page">
-  <section class="sx-profile-card sx-wallet">
-    <div><span>Wallet</span><strong>{{ "%.2f"|format(wallet) }} USD</strong></div>
-    <div><span>Balance</span><strong>{{ "%.2f"|format(balance) }} USD</strong></div>
-    <button class="sx-wallet-mark" type="button"
-      aria-expanded="false" aria-controls="sx-wallet-details"
-      onclick="const d=document.getElementById('sx-wallet-details');const open=this.getAttribute('aria-expanded')!=='true';d.hidden=!open;this.setAttribute('aria-expanded',String(open));this.textContent=open?'⌃':'W';">
-      W
-    </button>
-    <div id="sx-wallet-details" class="sx-wallet-details" hidden>
-      <div><span>Deposit</span><strong>{{ "%.2f"|format(deposit_total) }} USD</strong></div>
-      <div><span>Withdraw</span><strong>{{ "%.2f"|format(withdrawal_total) }} USD</strong></div>
-      <div><span>AI Income</span><strong>{{ "%.2f"|format(ai_income) }} USD</strong></div>
-      <div><span>Today's earnings</span><strong>{{ '%.2f'|format(today_income) }} USD</strong></div>
-      <div><span>Invite Count</span><strong>{{ invite_count }}</strong></div>
-      <div><span>Team Count</span><strong>{{ team_count }}</strong></div>
-      <div><span>Team income</span><strong>{{ "%.2f"|format(team_income) }} USD</strong></div>
-    </div>
-  </section>
-
-  <section class="sx-profile-card sx-profile-menu">
-    <a href="{{ url_for('deposit') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3m3 0h2"/></svg></span><span>Deposit</span>
-    </a>
-    <a href="{{ url_for('withdraw') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M5 9h1m12 6h1"/></svg></span><span>Withdraw</span>
-    </a>
-    <a href="{{ url_for('transactions') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h8"/></svg></span><span>Transactions</span>
-    </a>
-    <a href="{{ url_for('invite') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><path d="m3 12 5-5 4 3 3-2 6 5-5 5-5-3-3 2z"/><path d="m8 13 4 3 4-3M3 12l-1 6 4 3 4-3m8-8 4 2-1 6-3 2"/></svg></span><span>Invite</span>
-    </a>
-    <a href="{{ url_for('my_team') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2 20v-2a7 7 0 0 1 14 0v2zm14-6a5 5 0 0 1 6 5v1h-4"/></svg></span><span>My team</span>
-    </a>
-    <a href="{{ url_for('vip_tasks') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg></span><span>VIP Task</span>
-    </a>
-    <a href="#reward" class="sx-profile-item" onclick="document.getElementById('reward-popup').hidden=false;return false;">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="11" rx="1"/><path d="M2 7h20v4H2zm10 0v14M12 7H7a2.5 2.5 0 1 1 2.5-2.5C9.5 6 12 7 12 7Zm0 0h5a2.5 2.5 0 1 0-2.5-2.5C14.5 6 12 7 12 7Z"/></svg></span><span>Reward</span>
-    </a>
-    <a href="{{ url_for('manager_chat') }}" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13H2v5h5v-5zm16 0h2v5h-5v-5zM17 19a5 5 0 0 1-5 3h-2"/></svg></span><span>Manager</span>
-    </a>
-    <a href="#settings" class="sx-profile-item">
-      <span class="sx-profile-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v3H9v-3l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V3h6v3l2 1 2-1 2 4-2 1z"/></svg></span><span>Settings</span>
-    </a>
-  </section>
-
-  <section class="sx-profile-card sx-salary">
-    <div><span>Last month's salary</span><strong>{{ "%.2f"|format(last_salary) }} USD</strong></div>
-    <div><span>This month's salary</span><strong>{{ "%.2f"|format(this_salary) }} USD</strong></div>
-    <form action="{{ url_for('claim_salary') }}" method="post"><button type="submit">Get last month's salary</button></form>
-  </section>
-
-  <section class="sx-profile-card sx-salary">
-    <div><span>Invited last month</span><strong>{{ invited_last }}</strong></div>
-    <div><span>Invited this month</span><strong>{{ invited_this }}</strong></div>
-  </section>
-
-
-  <section class="sx-profile-card sx-reward-continuation">
-    <button type="button" class="sx-reward-button">Get last month's reward</button>
-
-    <div class="sx-reward-table">
-      <div class="sx-reward-row sx-reward-heading">
-        <strong>Invite</strong><strong>Reward</strong>
-      </div>
-      {% for count, reward in [
-        (2, '5.24'),
-        (6, '13.10'),
-        (15, '26.20'),
-        (30, '52.39'),
-        (60, '104.79'),
-        (100, '209.57'),
-        (150, '419.15'),
-        (300, '1,047.87'),
-        (600, '2,619.67'),
-        (1000, '13,098.33')
-      ] %}
-      <div class="sx-reward-row">
-        <span>{{ count }}</span><span>{{ reward }} USD</span>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
-
-
-
-  <style>#reward-popup[hidden]{display:none!important}</style>
-<div id="reward-popup" hidden style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.hidden=true">
-    <div style="background:#fff;color:#222;width:100%;max-width:340px;border-radius:10px;padding:22px;box-shadow:0 8px 30px #0004">
-      <h3 style="margin:0 0 16px;font-size:20px">Reward code</h3>
-      <form method="post" action="{{ url_for('redeem_reward') }}">
-        <input name="code" required autocomplete="off" placeholder="Enter reward code" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;font-size:15px;margin-bottom:14px">
-        <div style="display:flex;justify-content:flex-end;gap:10px">
-          <button type="button" onclick="document.getElementById('reward-popup').hidden=true" style="padding:10px 16px;border:1px solid #ccc;background:#f5f5f5;border-radius:6px">Cancel</button>
-          <button type="submit" style="padding:10px 20px;border:0;background:#1677ff;color:white;border-radius:6px">Sure</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <!-- Reward details hidden on Profile; rewards remain calculated by the backend. -->
-
+<style>
+.mine{padding:12px 12px 90px;background:#f5f7f5;color:#222;font-family:Arial,sans-serif;max-width:720px;margin:auto}
+.head{background:#80c342;color:white;padding:24px 18px;border-radius:0 0 24px 24px}
+.user{display:flex;gap:14px;align-items:center;margin-bottom:35px}.avatar{width:65px;height:65px;border-radius:50%;background:white;color:#80c342;display:grid;place-items:center;font-size:28px;font-weight:bold}
+.phone{font-size:22px;overflow-wrap:anywhere}.level{background:white;color:#80c342;border-radius:20px;padding:5px 20px;display:inline-block;margin-top:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.amount{font-size:32px}.actions{display:flex;gap:15px}.actions a{color:white;text-decoration:none;text-align:center;font-size:13px}.actions b{display:block;font-size:27px;margin-bottom:8px}
+.banner{height:210px;background:#e6e9e6;border-radius:18px;margin:18px 0;display:grid;place-items:center;color:#666;text-align:center}
+.menu{background:white;border-radius:14px;overflow:hidden}.menu a{display:block;padding:22px;border-bottom:1px solid #eee;text-decoration:none;color:#222;font-size:17px}.menu a:last-child{border:0}
+.extra details{background:white;border-radius:12px;padding:15px;margin-top:12px}.extra summary{font-weight:bold;cursor:pointer}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stats div{background:#f3f6f2;padding:12px;border-radius:8px;overflow-wrap:anywhere}
+</style>
+<div class="mine">
+<section class="head"><div class="user"><div class="avatar">T</div><div><div class="phone">{{ user.phone if user is defined and user.phone is defined else "TESLA Member" }}</div><span class="level">Lv1</span></div></div>
+<div class="row"><div><div>UGX</div><div class="amount">{{ "{:,.0f}".format(balance|float) }}</div><div>Balance</div></div>
+<div class="actions"><a href="{{ url_for("deposit") }}"><b>＋</b>Recharge</a><a href="{{ url_for("withdraw") }}"><b>↗</b>Withdraw</a><a href="{{ url_for("transactions") }}"><b>▤</b>Records</a></div></div></section>
+<div class="banner">Banner image space<br>Place your picture here later</div>
+<section class="menu"><a href="{{ url_for("dashboard") }}">ⓘ　About us　›</a><a href="{{ url_for("dashboard") }}#regulation">♧　Regulation　›</a><a href="{{ url_for("transactions") }}">▤　Records　›</a><a href="{{ url_for("dashboard") }}#customer-service">☏　Customer Service　›</a></section>
+<section class="extra"><details><summary>Account balances and earnings</summary><div class="stats"><div>Wallet<br>{{ "%.2f"|format(wallet) }} USD</div><div>Balance<br>{{ "%.2f"|format(balance) }} USD</div><div>Deposits<br>{{ "%.2f"|format(deposit_total) }} USD</div><div>Withdrawals<br>{{ "%.2f"|format(withdrawal_total) }} USD</div><div>AI income<br>{{ "%.2f"|format(ai_income) }} USD</div><div>Today earnings<br>{{ "%.2f"|format(today_income) }} USD</div><div>Invites<br>{{ invite_count }}</div><div>Team<br>{{ team_count }}</div></div></details><details><summary>Invite friends and team</summary><p><a href="{{ url_for("invite") }}">Invite Friends</a></p><p><a href="{{ url_for("team") }}">My Team</a></p></details><details><summary>Salary and rewards</summary><div class="stats"><div>Last month salary<br>{{ "%.2f"|format(last_salary) }} USD</div><div>This month salary<br>{{ "%.2f"|format(this_salary) }} USD</div><div>Invited last month<br>{{ invited_last }}</div><div>Invited this month<br>{{ invited_this }}</div></div><form action="{{ url_for("claim_salary") }}" method="post"><button style="margin-top:12px;padding:12px;background:#80c342;color:white;border:0;border-radius:8px;width:100%">Get last months salary</button></form></details></section>
 </div>
 {% endblock %}
