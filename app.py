@@ -148,6 +148,46 @@ def team():
         level2_count=level2_count, level3_count=level3_count
     )
 
+
+@app.route("/invite")
+@login_required
+def invite():
+    with connect() as db:
+        user = db.execute(
+            "SELECT * FROM users WHERE id=?", (session["user_id"],)
+        ).fetchone()
+        if not user:
+            session.clear()
+            return redirect(url_for("login"))
+
+        team_count = db.execute(
+            "SELECT COUNT(*) FROM users WHERE invited_by=?",
+            (user["id"],)
+        ).fetchone()[0]
+
+    referral_code = user["invite_code"]
+    referral_link = request.url_root.rstrip("/") + url_for(
+        "register"
+    ) + "?invitation=" + referral_code
+
+    return render_template(
+        "invite.html",
+        referral_code=referral_code,
+        referral_link=referral_link,
+        team_count=team_count
+    )
+
+
+@app.route("/my-team")
+@login_required
+def my_team():
+    return redirect(url_for("team"))
+
+@app.route("/profile")
+@login_required
+def profile():
+    return redirect(url_for("dashboard"))
+
 @app.route("/logout")
 def logout():
     session.clear()
