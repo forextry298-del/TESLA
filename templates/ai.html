@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}AI Machines | Space X{% endblock %}
+{% block content %}
+<div class="sx-ai-page">
+  <nav class="sx-series-tabs" aria-label="Machine series">
+    <button class="selected" data-series="All">All</button>
+    <button data-series="VIP Series">VIP Series</button>
+    <button data-series="A Series">A Series</button>
+    <button data-series="CS series">CS series</button>
+    <button data-series="N series">N series</button>
+    <button data-series="K series">K series</button>
+    <button data-series="GS series">GS series</button>
+  </nav>
+
+  <main class="sx-machine-list">
+    {% for machine in machines %}
+    {% set series = machine.series %}
+    {% set name = machine.name %}
+    {% set days = machine.days %}
+    {% set price = "%.2f"|format(machine.price) %}
+    {% set daily = "%.2f"|format(machine.daily) %}
+    <article class="sx-machine-card"
+      data-machine-series="{{ series }}"
+      onclick="window.location.href='{{ url_for('machine_detail', machine_code=name) }}'"
+      role="link" tabindex="0"
+      onkeydown="if(event.key==='Enter'){window.location.href='{{ url_for('machine_detail', machine_code=name) }}'}">
+      <div class="sx-machine-image">
+        {% if name in ['VIP-1', 'VIP-1 PRO'] %}
+        <img src="{{ url_for('static', filename='images/vip1-space-x.webp') }}"
+             alt="Space X {{ name }}" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'VIP-2' %}
+        <img src="{{ url_for('static', filename='images/vip2-tesla.webp') }}"
+             alt="Tesla for VIP-2" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'VIP-2 PRO' %}
+        <img src="{{ url_for('static', filename='images/vip2-pro-tesla.webp') }}"
+             alt="Flying Tesla for VIP-2 PRO" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'CS-1' %}
+        <img src="{{ url_for('static', filename='images/cs1-rocket.webp') }}" alt="CS-1 rocket" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'CS-2' %}
+        <img src="{{ url_for('static', filename='images/cs2-rocket.webp') }}" alt="CS-2 rocket" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'CS-3' %}
+        <img src="{{ url_for('static', filename='images/cs3-rocket.webp') }}" alt="CS-3 rocket" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'N-1' %}
+        <img src="{{ url_for('static', filename='images/n1-satellite.webp') }}" alt="N-1 satellite" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'N-2' %}
+        <img src="{{ url_for('static', filename='images/n2-rocket-satellite.webp') }}" alt="N-2 rocket and satellite" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'N-3' %}
+        <img src="{{ url_for('static', filename='images/n3-satellite-explosion.webp') }}" alt="N-3 satellite explosion" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'K-1 MAX' %}
+        <img src="{{ url_for('static', filename='images/k1-moon-rocket.webp') }}" alt="K-1 MAX rocket on the Moon" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'K-3 MAX' %}
+        <img src="{{ url_for('static', filename='images/k2-jupiter-rocket.webp') }}" alt="K-3 MAX rocket near Jupiter" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'K-4 MAX' %}
+        <img src="{{ url_for('static', filename='images/k3-black-hole-rocket.webp') }}" alt="K-4 MAX rocket near a black hole" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'K-5 MAX' %}
+        <img src="{{ url_for('static', filename='images/k4-universe-rocket.webp') }}" alt="K-5 MAX rocket in the universe" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'A-1 Plus' %}
+        <img src="{{ url_for('static', filename='images/a1-plus-rocket.webp') }}"
+             alt="A-1 Plus rocket" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'A-1' %}
+        <img src="{{ url_for('static', filename='images/a1-rocket.webp') }}"
+             alt="A-1 rocket" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% elif name == 'A-2' %}
+        <img src="{{ url_for('static', filename='images/a2-rocket.webp') }}"
+             alt="A-2 rocket" class="sx-machine-photo" loading="lazy" decoding="async">
+        {% else %}
+        <span class="sx-image-placeholder">Machine image</span>
+        {% endif %}
+      </div>
+      <div class="sx-machine-info">
+        <h2>{{ name }}</h2>
+        <p>Lock: {{ days }} Days</p>
+        <p>Price: {{ price }} USD</p>
+        <p>Daily: {{ daily }} USD</p>
+      </div>
+    </article>
+    {% endfor %}
+  </main>
+
+
+</div>
+
+
+<style>
+.sx-ai-page {
+  background: #000;
+  color: #eee;
+  min-height: 100vh;
+  padding: 10px 0 90px;
+  overflow: hidden;
+}
+.sx-series-tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 12px 16px;
+  scrollbar-width: none;
+  background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.sx-series-tabs::-webkit-scrollbar { display: none; }
+.sx-series-tabs button {
+  flex: 0 0 auto;
+  border: 1px solid #12364a;
+  background: #030608;
+  color: #eee;
+  border-radius: 30px;
+  padding: 12px 20px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.sx-series-tabs button.selected {
+  background: #08aaf0;
+  border-color: #08aaf0;
+  color: #fff;
+  font-weight: bold;
+}
+.sx-machine-list {
+  display: grid;
+  gap: 12px;
+  padding: 8px 12px;
+}
+.sx-machine-card {
+  display: grid;
+  grid-template-columns: 44% 56%;
+  min-height: 140px;
+  border: 1px solid #153548;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #101010;
+  box-sizing: border-box;
+}
+.sx-machine-card[hidden] { display: none !important; }
+.sx-machine-image {
+  position: relative;
+  min-width: 0;
+  min-height: 140px;
+  background: #080a0c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-right: 1px solid #172d3a;
+ padding:0; margin:0; }
+.sx-machine-image { position:relative; overflow:hidden; }
+.sx-machine-photo { width:100%; height:100%; min-height:140px; object-fit:cover; display:block; position:absolute; inset:0; }\n
+.sx-image-placeholder {
+  color: #637887;
+  font-size: 11px;
+  border: 1px dashed #263b48;
+  padding: 10px;
+  text-align: center;
+}
+.sx-machine-info {
+  padding: 10px 8px;
+  min-width: 0;
+  align-self: center;
+  box-sizing: border-box;
+}
+.sx-machine-info h2 {
+  font-size: 16px;
+  color: #12a8f5;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.sx-machine-info p {
+  font-size: 12px;
+  color: #d0d0d0;
+  margin: 6px 0;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.sx-ai-page .sx-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+@media (min-width: 420px) {
+  .sx-machine-info h2 { font-size: 18px; }
+  .sx-machine-info p { font-size: 14px; }
+}
+</style>
+
+
+<script>
+document.querySelectorAll('.sx-series-tabs button').forEach(button=>{
+  button.addEventListener('click',()=>{
+    document.querySelectorAll('.sx-series-tabs button').forEach(b=>b.classList.remove('selected'));
+    button.classList.add('selected');
+    const series=button.dataset.series;
+    document.querySelectorAll('.sx-machine-card').forEach(card=>{
+      card.hidden=series!=='All' && card.dataset.machineSeries!==series;
+    });
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+<nav class="sx-bottom-nav" aria-label="Main navigation">
+  <a href="{{ url_for('dashboard') }}" aria-label="Home">
+    <span class="sx-nav-icon">⌂</span><small>Home</small>
+  </a>
+  <a href="#messages" aria-label="Chats">
+    <span class="sx-nav-icon">☏</span><small>Chats</small>
+  </a>
+  <a href="{{ url_for('ai') }}" aria-label="AI">
+    <span class="sx-nav-icon">✦</span><small>AI</small>
+  </a>
+  <a href="{{ url_for('income') }}" aria-label="Income">
+    <span class="sx-nav-icon">$</span><small>Income</small>
+  </a>
+  <a href="{{ url_for('profile') }}" aria-label="Profile">
+    <span class="sx-nav-icon">●</span><small>Profile</small>
+  </a>
+</nav>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPACE X Admin</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#071426;color:#edf5ff;font-family:Arial,sans-serif}
+.top{padding:22px 18px;background:linear-gradient(135deg,#102c50,#075985)}
+.top small{color:#a9d9ff}
+.top h2{margin:8px 0;font-size:25px}
+main{max-width:850px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#10233b;border:1px solid #203b5a;border-radius:15px;padding:16px;margin-bottom:12px}
+.num{font-size:23px;font-weight:bold;color:#60c5ff;margin-top:9px}
+.label{font-size:13px;color:#a8bad0}
+h3{margin:0 0 14px;font-size:17px}
+a,button{display:inline-block;text-decoration:none;border:0;border-radius:9px;padding:11px 13px;font-weight:bold;font-size:14px}
+a{background:#183b5f;color:#d9efff}
+button{cursor:pointer}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.links a{text-align:center}
+input,textarea{width:100%;padding:12px;border-radius:9px;border:1px solid #34516f;background:#071426;color:white;margin:6px 0}
+.btn{background:#087f5b;color:white}
+.danger{background:#b42332;color:white}
+.item{padding:12px 0;border-bottom:1px solid #29415b;overflow-wrap:anywhere}
+.muted{color:#9eb2ca;font-size:13px}
+@media(max-width:360px){.grid{grid-template-columns:1fr}.links{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+<small>SPACE X • CONTROL CENTER</small>
+<h2>Admin Dashboard</h2>
+<div class="muted">Manage deposits, withdrawals and announcements</div>
+</header>
+<main>
+<section class="grid">
+<div class="card"><div class="label">REGISTERED USERS</div><div class="num">{{ total_users }}</div></div>
+<div class="card"><div class="label">PENDING DEPOSITS</div><div class="num">{{ deposits|length }}</div></div>
+<div class="card"><div class="label">PENDING WITHDRAWALS</div><div class="num">{{ withdrawals|length }}</div></div>
+<div class="card"><div class="label">APPROVED DEPOSITS</div><div class="num">${{ "%.2f"|format(total_deposits|float) }}</div></div>
+<div class="card"><div class="label">APPROVED WITHDRAWALS</div><div class="num">${{ "%.2f"|format(total_withdrawals|float) }}</div></div>
+</section>
+<section class="card">
+<h3>Management</h3>
+<div class="links">
+<a href="/admin/deposits">Review Deposits</a>
+<a href="/admin/withdrawals">Review Withdrawals</a>
+<a href="/admin/announcement">Publish Announcement</a>
+<a href="/dashboard">Back to Website</a>
+</div>
+</section>
+<section class="card">
+<h3>Latest Registered Users</h3>
+{% for u in users %}
+<div class="item">#{{ u.id }} · {{ u.phone }}<br><span class="muted">Balance: ${{ u.balance }}</span></div>
+{% else %}<p class="muted">No users found.</p>{% endfor %}
+</section>
+</main>
+</body>
+</html>

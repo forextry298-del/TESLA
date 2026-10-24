@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.product-summary{display:grid;grid-template-columns:1fr 1fr;background:#ed79aa;color:white;padding:17px;border-radius:14px;margin-bottom:15px}
+.product-summary strong{display:block;font-size:21px;margin-bottom:6px}
+.product-card{background:white;border:1px solid #e7a9c7;border-radius:15px;padding:14px;margin-bottom:14px;box-shadow:0 3px 12px #00000008}
+.product-row{display:flex;gap:12px;align-items:flex-start}
+.product-image{width:112px;height:112px;flex-shrink:0;border:1px dashed #e5a5c5;background:#fff7fb;border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;color:#bd7a9d;font-size:12px;padding:8px}
+.product-info{flex:1;min-width:0}
+.product-name{font-weight:bold;font-size:16px}
+.product-price{font-size:19px;color:#c34c86;margin:9px 0}
+.product-detail{font-size:13px;color:#756875;margin:7px 0}
+.invest-btn{display:block;text-align:center;margin-top:14px;padding:12px;background:#df669f;color:white;border-radius:25px;font-weight:bold}
+</style>
+
+
+
+<div class="product-summary">
+  <div><strong>{{ owned.values()|sum if owned else 0 }}</strong>My product purchases</div>
+  <div><strong>UGX {{ "{:,.0f}".format(user['balance']) }}</strong>Available balance</div>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin:12px 2px 15px">
+  <strong>Available products</strong>
+  <a href="{{ url_for('my_products') }}">My Products &gt;</a>
+</div>
+
+{% for p in products %}
+<div class="product-card">
+  <div class="product-row">
+    <div class="product-image">IMAGE SPACE<br>Awaiting your image</div>
+    <div class="product-info">
+      <div class="product-name">{{ p.name }}</div>
+      <div class="product-price">UGX {{ "{:,.0f}".format(p.price) }}</div>
+      <div class="product-detail">Term: <span style="float:right">{{ p.term }} days</span></div>
+      <div class="product-detail">Owned: <span style="float:right">{{ owned.get(p.id, 0) }}</span></div>
+    </div>
+  </div>
+  <a class="invest-btn" href="{{ url_for('invest', product_id=p.id) }}">INVEST NOW</a>
+</div>
+{% endfor %}
+
+<nav class="nav">
+  <a href="{{ url_for('dashboard') }}">Home</a>
+  <a class="active" href="{{ url_for('products') }}">Products</a>
+  <a href="{{ url_for('my_products') }}">My Products</a>
+  <a href="{{ url_for('dashboard') }}#account">Mine</a>
+</nav>
+{% endblock %}

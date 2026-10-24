@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#071321">
+  <title>{% block title %}Space X{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') + '?v=20261020_101337' }}">
+  <meta name="color-scheme" content="dark">
+</head>
+<body>
+  <main class="page-shell{% if request.endpoint == 'dashboard' %} dashboard-shell{% elif request.endpoint == 'income' %} income-shell{% elif request.endpoint == 'profile' %} profile-shell{% elif request.endpoint == 'ai' %} ai-shell{% elif request.endpoint == 'transactions' %} transactions-shell{% endif %}">
+{% if request.endpoint not in ['login', 'register'] %}
+  {% include "_bottom_nav.html" %}
+{% endif %}
+
+</body>
+</html>

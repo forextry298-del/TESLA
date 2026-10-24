@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Withdraw | Space X{% endblock %}
+{% block content %}
+<div class="wd">
+<h2>‹ Withdraw</h2>
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="wd-message {{ category }}" role="alert">{{ message }}</div>{% endfor %}{% endwith %}
+<form method="post">
+<label>Choose network</label>
+<select name="network" required>
+<option value="">Select network</option>
+<option value="MTN">MTN Mobile Money</option>
+<option value="AIRTEL">Airtel Money</option>
+</select>
+<label>Receiving phone number</label>
+<input name="recipient_phone" placeholder="Enter number" required>
+<label>Amount (USD)</label>
+<input id="amount" name="amount_usd" type="number" min="2" step="0.01" required>
+<div class="receive">You will receive <strong id="ugx">UGX 0</strong></div>
+<p id="rate">Getting current exchange rate...</p>
+<button type="submit">Continue</button>
+</form>
+</div>
+<style>
+.wd{background:#000;color:#fff;min-height:100vh;padding:20px 10px 40px;font-family:Arial;max-width:100%;width:100%;box-sizing:border-box;margin:0 auto}
+.wd h2{font-size:23px;margin:8px 0 24px}
+.wd form{display:flex;flex-direction:column;gap:12px}
+.wd label{color:#bbb;font-size:14px;margin-top:6px}
+.wd input,.wd select{box-sizing:border-box;width:100%;padding:13px 14px;min-height:48px;background:#111;color:white;border:1px solid #333;border-radius:8px;font-size:15px}
+.receive{padding:17px 14px;background:#171717;border-radius:8px;display:flex;justify-content:space-between;gap:8px;font-size:15px;flex-wrap:wrap}
+.wd button{padding:14px 16px;min-height:50px;border:0;border-radius:8px;font-size:16px;font-weight:bold;width:100%;cursor:pointer}
+.wd p{color:#aaa;font-size:12px;line-height:1.5}.wd .wd-message{padding:16px;margin:0 0 20px;border-radius:10px;color:#ff4444;background:#251010;border:1px solid #a52a2a;font-size:17px;font-weight:bold}.wd .wd-message.success{color:#22c55e;background:#0b2113;border-color:#16783b}
+</style>
+<script>
+let rate=null;
+fetch('/api/exchange-rate').then(r=>r.json()).then(d=>{
+if(d.rate){rate=Number(d.rate);document.getElementById('rate').textContent=d.message;update();}
+else document.getElementById('rate').textContent='Exchange rate unavailable';
+}).catch(()=>document.getElementById('rate').textContent='Exchange rate unavailable');
+function update(){
+let n=Number(document.getElementById('amount').value)||0;
+document.getElementById('ugx').textContent=rate?'UGX '+(n*rate).toLocaleString('en-UG',{minimumFractionDigits:2,maximumFractionDigits:2}):'Unavailable';
+}
+document.getElementById('amount').addEventListener('input',update);
+</script>
+{% endblock %}

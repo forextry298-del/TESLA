@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>{% if kind == 'deposit' %}Deposit Funds{% else %}Withdraw Funds{% endif %}</h2>
+  <p class="sub">All amounts are in Ugandan shillings (UGX).</p>
+
+  <form method="post">
+    <div class="field">
+      <label>Amount (UGX)</label>
+      <input name="amount" type="number" min="1000" max="5000000"
+             step="1000" placeholder="Enter amount" required>
+    </div>
+
+    <div class="field">
+      <label>Payment method</label>
+      <select name="method" required>
+        <option value="">Select method</option>
+        <option>MTN Mobile Money</option>
+        <option>Airtel Money</option>
+        <option>Bank</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>{% if kind == 'deposit' %}Payment reference (if available){% else %}Your payout number or bank details{% endif %}</label>
+      <input name="reference" maxlength="120"
+             placeholder="Enter reference or payout details">
+    </div>
+
+    <button class="btn" type="submit">
+      Submit {% if kind == 'deposit' %}Deposit{% else %}Withdrawal{% endif %} Request
+    </button>
+  </form>
+
+  <p class="sub" style="margin-top:15px">
+    Requests remain pending until reviewed. This form does not itself transfer money.
+  </p>
+  <div class="links"><a href="{{ url_for('dashboard') }}">Return to home</a></div>
+</div>
+{% endblock %}

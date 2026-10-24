@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+<h2>Create your account</h2>
+<p class="sub">Welcome to TESLA. Register to get started.</p>
+<form method="post">
+<div class="field"><label>Phone number</label><input name="phone" type="tel" placeholder="+256..." required autocomplete="tel"></div>
+<div class="field"><label>Password</label><input name="password" type="password" minlength="8" placeholder="At least 8 characters" required autocomplete="new-password"></div>
+<div class="field"><label>Re-enter password</label><input name="confirm" type="password" required placeholder="Confirm password" autocomplete="new-password"></div>
+<div class="field"><label>Invitation code (optional)</label><input name="invitation" placeholder="Enter invitation code"></div>
+<button class="btn" type="submit">Register</button>
+</form>
+<div class="links">Already registered? <a href="{{ url_for('login') }}">Go to login &gt;</a></div>
+</div>
+{% endblock %}

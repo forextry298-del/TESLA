@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My Team | TESLA{% endblock %}
+{% block content %}
+<style>
+.team-page{max-width:560px;margin:auto;padding:14px 12px 90px;background:#fff;color:#333;font-family:Arial,sans-serif;font-size:13px}
+.team-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.team-head a{color:#e84b91;text-decoration:none;font-size:23px}
+.team-head h2{margin:0;font-size:18px;color:#d93680}
+.team-card{background:#fff7fb;border:1px solid #f4c9dc;border-radius:12px;padding:13px;margin-bottom:10px}
+.team-label{font-size:11px;color:#777}
+.team-count{font-size:23px;font-weight:700;color:#df4389;margin-top:5px}
+.member{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.member-phone{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.member-date{font-size:10px;color:#888;margin-top:5px}
+.member-tag{font-size:10px;color:#d93680}
+.team-empty{text-align:center;color:#888;font-size:12px;line-height:1.7;padding:22px 10px}
+.team-btn{display:block;text-align:center;text-decoration:none;background:#e84b91;color:white;padding:11px;border-radius:9px;font-size:13px;font-weight:700;margin-top:12px}
+</style>
+<div class="team-page">
+  <div class="team-head">
+    <a href="{{ url_for('dashboard') }}">‹</a>
+    <h2>My Team</h2>
+  </div>
+  <div class="team-card">
+    <div class="team-label">TOTAL INVITED MEMBERS</div>
+    <div class="team-count">{{ members|length }}</div>
+  </div>
+  {% if members %}
+    {% for member in members %}
+      <div class="team-card member">
+        <div>
+          <div class="member-phone">{{ member['phone'] }}</div>
+          <div class="member-date">Joined: {{ member['created_at'] or 'Date unavailable' }}</div>
+        </div>
+        <span class="member-tag">Member</span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="team-card team-empty">
+      <div style="font-size:23px;color:#e84b91">＋</div>
+      <strong>No team members yet</strong>
+      <div>Share your invitation code with friends when they register.</div>
+    </div>
+  {% endif %}
+  <a class="team-btn" href="{{ url_for('dashboard') }}">Back to Home</a>
+</div>
+{% endblock %}

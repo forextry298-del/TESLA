@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Income & Rewards | Space X{% endblock %}
+{% block content %}
+<style>
+.sx-income-page{background:#000;color:#f5f5f5;min-height:calc(100vh - 120px);padding:20px 16px 90px;font-family:Georgia,serif}
+.sx-income-page h1{font-size:34px;line-height:1.15;margin:12px 0 18px;font-weight:700}
+.sx-income-page h2{font-size:25px;margin:34px 0 16px}
+.sx-income-page .label{font-size:20px;margin:16px 0}
+.sx-income-page .amount{font-size:27px;font-weight:bold;margin:18px 0 24px}
+.sx-income-page p{font-size:19px;line-height:1.35;margin:12px 0 26px}
+.sx-income-page .level{font-size:19px;margin-top:24px}
+.sx-income-page .level-amount{font-size:26px;font-weight:bold;margin:12px 0 28px}
+.sx-income-page .history-item{font-size:17px;line-height:1.5;margin:15px 0;padding-bottom:12px;border-bottom:1px solid #222}
+</style>
+<div class="sx-income-page">
+  <h1>Income &amp; Rewards</h1>
+  <div class="label">Total referral commissions</div>
+  <div class="amount">{{ "%.3f"|format(total_commission) }} USD</div>
+  <p>Earned from approved deposits by your referral team.</p>
+
+  <div class="level">LV1 · 10%</div>
+  <div class="level-amount">{{ "%.3f"|format(lv1_total) }} USD</div>
+
+  <div class="level">LV2 · 5%</div>
+  <div class="level-amount">{{ "%.3f"|format(lv2_total) }} USD</div>
+
+  <div class="level">LV3 · 1%</div>
+  <div class="level-amount">{{ "%.3f"|format(lv3_total) }} USD</div>
+
+  <h2>Commission history</h2>
+  {% if commissions %}
+    {% for item in commissions %}
+      <div class="history-item">
+        LV{{ item.referral_level }} · +{{ "%.3f"|format(item.amount_usd) }} USD
+        <br>{{ item.created_at }}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No referral commissions have been credited yet. Commissions appear here after qualifying deposits are approved.</p>
+  {% endif %}
+</div>
+{% endblock %}

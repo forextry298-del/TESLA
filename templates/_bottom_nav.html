@@ -1,0 +1,19 @@
+<nav class="sx-bottom-nav" aria-label="Main navigation">
+  <a href="{{ url_for('dashboard') }}"
+     class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+    <span>Home</span>
+  </a>
+
+  <a href="{{ url_for('products') }}"
+     class="{% if request.endpoint in ['products', 'invest', 'my_products'] %}active{% endif %}">
+    <span>Product</span>
+  </a>
+
+  <a href="/team">
+    <span>Team</span>
+  </a>
+
+  <a href="{{ url_for('dashboard') }}#account">
+    <span>Mine</span>
+  </a>
+</nav>

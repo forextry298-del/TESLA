@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Income | Space X<script>
+(function(){
+  function fmt(s){
+    s=Math.max(0,Number(s)||0);
+    var d=Math.floor(s/86400); s%=86400;
+    var h=Math.floor(s/3600); s%=3600;
+    var m=Math.floor(s/60); var sec=s%60;
+    return (d?d+"d ":"")+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+  }
+  function tick(){
+    document.querySelectorAll(".sx-countdown,.sx-maturity").forEach(function(el){
+      var n=Number(el.dataset.seconds||0);
+      el.textContent=fmt(n);
+      if(n>0) el.dataset.seconds=String(n-1);
+    });
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+{% endblock %}
+{% block content %}
+<style>
+.sx-income-page{background:#000;color:#f2f6fb;min-height:calc(100vh - 140px);padding:12px 14px 90px;font-family:Arial,sans-serif}
+.sx-machine-card{display:grid;grid-template-columns:minmax(105px,34%) minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:14px;align-items:start;background:#03090e;border:1px solid #123747;border-radius:18px;padding:14px;margin:10px 0 14px;box-shadow:0 0 12px #00baff0a;min-height:0}
+.sx-machine-image{grid-column:1;grid-row:1 / span 3;width:100%;height:150px;max-height:150px;object-fit:contain;background:#07121b;border-radius:12px;margin:0}
+.sx-machine-head{grid-column:2;grid-row:1;display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0}
+.sx-machine-stats{grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;text-align:center;margin:14px 0 10px}
+.sx-machine-note{grid-column:1 / -1;grid-row:3;border:1px solid #123747;border-radius:12px;padding:9px 11px;color:#9eb3c6;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+@media(max-width:380px){.sx-machine-card{grid-template-columns:95px minmax(0,1fr);column-gap:10px;padding:10px}.sx-machine-image{height:125px;max-height:125px}.sx-machine-name{font-size:16px}}
+.sx-machine-name{font-size:18px;font-weight:700;color:#20caff}
+.sx-machine-series{font-size:12px;color:#9aafc1;margin-top:7px}
+.sx-running{font-size:11px;color:#20d9ff;border:1px solid #087fa8;border-radius:20px;padding:6px 10px;white-space:nowrap}
+.sx-machine-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;text-align:center;margin:23px 0 15px}
+.sx-machine-stats span{display:block;font-size:12px;color:#aab7c5;margin-bottom:8px}
+.sx-machine-stats strong{font-size:14px;overflow-wrap:anywhere}
+.sx-machine-stats .sx-daily{color:#20caff}
+.sx-progress{height:7px;background:#101c28;border-radius:10px;overflow:hidden;margin:14px 0}
+.sx-progress-fill{height:100%;background:#12bce9;border-radius:10px}
+.sx-machine-note{border:1px solid #123747;border-radius:14px;padding:12px;color:#9eb3c6;font-size:12px;line-height:1.6}
+.sx-machine-empty{color:#888;font-size:15px;margin:22px 0}
+</style>
+<div class="sx-income-page">
+  {% if machines %}
+    {% for machine in machines %}
+      <section class="sx-machine-card">
+        {% if machine.image %}<img class="sx-machine-image" src="{{ machine.image }}" alt="{{ machine.name }}">{% endif %}
+        <div class="sx-machine-head">
+          <div>
+            <div class="sx-machine-name">{{ machine.name }}</div>
+            <div class="sx-machine-series">{{ machine.series }}</div>
+          </div>
+          <span class="sx-running">{{ machine.status }}</span>
+        </div>
+        <div class="sx-machine-stats">
+          <div><span>Daily</span><strong class="sx-daily">{{ "%.2f"|format(machine.daily) }}</strong></div>
+          <div><span>Days</span><strong>{{ machine.completed }}/{{ machine.days }}</strong></div>
+          <div><span>Total</span><strong>{{ "%.2f"|format(machine.total) }}</strong></div>
+        </div>
+        <div class="sx-progress"><div class="sx-progress-fill" style="width:{{ machine.progress }}%"></div></div>
+        <div class="sx-machine-note">
+          Earned: ${{ "%.2f"|format(machine.earned) }} of ${{ "%.2f"|format(machine.total) }}<br>
+          Next income in: <strong class="sx-countdown" data-seconds="{{ machine.next_seconds }}">--:--:--</strong><br>
+          Maturity in: <strong class="sx-maturity" data-seconds="{{ machine.remaining_seconds }}">--</strong>
+        </div>
+      </section>
+    {% endfor %}
+  {% else %}
+    <p class="sx-machine-empty">No machines yet. Purchase one from the AI tab.</p>
+  {% endif %}
+</div>
+<script>
+(function(){
+  function fmt(s){
+    s=Math.max(0,Number(s)||0);
+    var d=Math.floor(s/86400); s%=86400;
+    var h=Math.floor(s/3600); s%=3600;
+    var m=Math.floor(s/60); var sec=s%60;
+    return (d?d+"d ":"")+String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+  }
+  function tick(){
+    document.querySelectorAll(".sx-countdown,.sx-maturity").forEach(function(el){
+      var n=Number(el.dataset.seconds||0);
+      el.textContent=fmt(n);
+      if(n>0) el.dataset.seconds=String(n-1);
+    });
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+{% endblock %}

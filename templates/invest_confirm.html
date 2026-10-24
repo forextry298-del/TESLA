@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="margin-top:18px">
+  <div style="height:160px;border-radius:14px;background:#fff;overflow:hidden;margin-bottom:12px">
+    <img src="{{ url_for('static', filename='products/shared-product.jpg') }}"
+         alt="{{ product.name }}"
+         style="width:100%;height:100%;object-fit:contain;display:block">
+  </div>
+  <h2 style="margin-top:15px">{{ product.name }}</h2>
+  <div style="font-size:25px;color:#c34c86;font-weight:bold;margin:12px 0">
+    UGX {{ "{:,.0f}".format(product.price) }}
+  </div>
+  <p class="sub">Term: {{ product.term }} days</p>
+  <p class="sub">Available balance: UGX {{ "{:,.0f}".format(user['balance']) }}</p>
+
+  {% if user['balance'] < product.price %}
+  <p style="color:#bd356e;font-weight:bold">Insufficient funds for this purchase.</p>
+  <a class="btn" href="{{ url_for('deposit') }}">Go to Deposit</a>
+  {% else %}
+  <p class="sub">Confirm only if you understand the product terms and cost.</p>
+  <form method="post">
+    <input type="hidden" name="confirm" value="yes">
+    <button class="btn" type="submit">Confirm Purchase</button>
+  </form>
+  {% endif %}
+
+  <div class="links"><a href="{{ url_for('products') }}">Cancel</a></div>
+</div>
+{% endblock %}

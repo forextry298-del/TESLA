@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Profile | Space X{% endblock %}
+{% block content %}
+<div class="sx-profile-page">
+  <section class="sx-profile-card sx-wallet">
+    <div><span>Wallet</span><strong>0.00 UGX</strong></div>
+    <div><span>Balance</span><strong>0.00 UGX</strong></div>
+    <button class="sx-wallet-mark" type="button"
+      aria-expanded="false" aria-controls="sx-wallet-details"
+      onclick="const d=document.getElementById('sx-wallet-details');const open=this.getAttribute('aria-expanded')!=='true';d.hidden=!open;this.setAttribute('aria-expanded',String(open));this.textContent=open?'⌃':'W';">
+      W
+    </button>
+    <div id="sx-wallet-details" class="sx-wallet-details" hidden>
+      <div><span>Deposit</span><strong>0.00 UGX</strong></div>
+      <div><span>Withdraw</span><strong>0.00 UGX</strong></div>
+      <div><span>AI Income</span><strong>0.00 UGX</strong></div>
+      <div><span>Today's earnings</span><strong>0.00 UGX</strong></div>
+      <div><span>Invite Count</span><strong>0</strong></div>
+      <div><span>Team Count</span><strong>0</strong></div>
+      <div><span>Team income</span><strong>0.00 UGX</strong></div>
+    </div>
+  </section>
+
+  <section class="sx-profile-card sx-profile-menu">
+    {% for item in [
+      ('▤','Deposit','#deposit'),
+      ('▧','Withdraw','#withdraw'),
+      ('▤','Transactions','#transactions'),
+      ('♧','Invite','#invite'),
+      ('♟','My team','#team'),
+      ('★','VIP Task','#vip'),
+      ('♔','Reward','#reward'),
+      ('☏','Manager','#manager'),
+      ('⚙','Settings','#settings')
+    ] %}
+    <a href="{{ item[2] }}" class="sx-profile-item">
+      <span class="sx-profile-icon">{{ item[0] }}</span>
+      <span>{{ item[1] }}</span>
+    </a>
+    {% endfor %}
+  </section>
+
+  <section class="sx-profile-card sx-salary">
+    <div><span>Last month's salary</span><strong>0.00 UGX</strong></div>
+    <div><span>This month's salary</span><strong>0.00 UGX</strong></div>
+    <a href="#salary">Get last month's salary</a>
+  </section>
+
+  <section class="sx-profile-card sx-salary">
+    <div><span>Invited last month</span><strong>0</strong></div>
+    <div><span>Invited this month</span><strong>0</strong></div>
+  </section>
+
+  {% include "_bottom_nav.html" %}
+</div>
+{% endblock %}

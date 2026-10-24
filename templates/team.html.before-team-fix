@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}My Team | Space X{% endblock %}
+{% block content %}
+<style>
+.team-page{
+  max-width:640px;
+  margin:auto;
+  padding:14px 12px 90px;
+  background:#fff7fb;
+  color:#302630;
+  font-family:Arial,sans-serif;
+  min-height:75vh;
+  box-sizing:border-box;
+}
+.team-head{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:16px;
+}
+.team-head a{
+  color:#c34c86;
+  text-decoration:none;
+  font-size:23px;
+}
+.team-head h2{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+.team-card{
+  background:#fff;
+  border:1px solid #f0c5d9;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:11px;
+  box-shadow:0 2px 7px #00000006;
+}
+.team-count{
+  font-size:23px;
+  line-height:1.2;
+  font-weight:700;
+  color:#c34c86;
+  margin-top:6px;
+}
+.team-label{
+  font-size:11px;
+  color:#8c7885;
+}
+.member{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.member-phone{
+  font-size:13px;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.member-date{
+  font-size:10px;
+  color:#8c7885;
+  margin-top:5px;
+}
+.team-empty{
+  text-align:center;
+  padding:22px 10px;
+  color:#8c7885;
+  line-height:1.6;
+  font-size:12px;
+}
+.team-btn{
+  display:block;
+  box-sizing:border-box;
+  text-align:center;
+  text-decoration:none;
+  background:#df669f;
+  color:white;
+  padding:10px;
+  border-radius:22px;
+  font-size:13px;
+  font-weight:600;
+  margin-top:14px;
+}
+</style>
+<div class="team-page">
+  <div class="team-head">
+    <a href="{{ url_for('invite') }}" aria-label="Back">‹</a>
+    <h2>My Team</h2>
+  </div>
+  <div class="team-card">
+    <div class="team-label">TOTAL INVITED MEMBERS</div>
+    <div class="team-count">{{ members|length }}</div>
+  </div>
+  {% if members %}
+    {% for member in members %}
+      <div class="team-card member">
+        <div>
+          <div class="member-phone">{{ member['phone'] }}</div>
+          <div class="member-date">Joined: {{ member['created_at'] or 'Date unavailable' }}</div>
+        </div>
+        <span style="color:#08adf4;font-size:13px">Member</span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="team-card team-empty">
+      <div style="font-size:30px;color:#08adf4">＋</div>
+      <strong>No team members yet</strong>
+      <div>Share your invitation link to help friends join your team.</div>
+    </div>
+  {% endif %}
+  <a class="team-btn" href="{{ url_for('invite') }}">Invite Friends</a>
+</div>
+{% endblock %}

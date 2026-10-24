@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TESLA</title>
+<style>
+:root{--pink:#ed70a8;--deep:#d94d8c;--pale:#fff0f6;--white:#fff;--text:#342b32}
+*{box-sizing:border-box}
+body{margin:0;background:#fff8fb;color:var(--text);font-family:Arial,sans-serif;font-size:14px}
+a{color:var(--deep);text-decoration:none}
+.top{text-align:center;background:white;padding:15px;font-size:23px;font-weight:bold;color:var(--deep);letter-spacing:2px}
+.page{max-width:430px;margin:auto;padding:15px 14px 85px}
+.card{background:white;border-radius:19px;padding:20px;margin-bottom:15px;box-shadow:0 3px 15px #b85c8412}
+h2{font-size:21px;margin:0 0 8px}
+.sub{color:#8b7c85;line-height:1.5}
+.field{margin:15px 0}
+label{display:block;margin-bottom:7px;color:#786570}
+input{width:100%;padding:13px;border:1px solid #f0d9e4;border-radius:10px;background:#fffafd;font-size:15px;outline-color:var(--pink)}
+.btn{display:block;width:100%;border:0;border-radius:11px;padding:14px;background:linear-gradient(100deg,#ed70a8,#f3a5c6);color:white;font-size:15px;font-weight:bold;text-align:center;cursor:pointer}
+.links{text-align:center;margin-top:17px;line-height:2}
+.flash{background:#fff0f6;color:#a42b62;padding:11px;border-radius:9px;margin:10px 0}
+.hero{background:linear-gradient(135deg,#f9c5dc,#ed70a8);color:white;padding:22px;border-radius:19px;margin-bottom:14px}
+.hero small{opacity:.9}
+.balance{font-size:27px;font-weight:bold;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:#fff0f6;padding:17px 10px;border-radius:14px;text-align:center;color:#9c3866}
+.tile b{display:block;font-size:14px;margin-bottom:5px}
+.tile span{font-size:12px;color:#8b7c85}
+.placeholder{height:135px;border:2px dashed #e9a5c4;background:#fffafd;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;color:#a47b8d;padding:15px;margin:14px 0}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #f4dce7;display:flex;justify-content:space-around;padding:13px 4px calc(13px + env(safe-area-inset-bottom));z-index:5}
+.nav a{font-size:12px;text-align:center;color:#8b6578}
+.nav a.active{color:var(--deep);font-weight:bold}
+@media(min-width:500px){.page{padding-top:25px}}
+
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #f0d9e4;
+    border-radius: 10px;
+    background: #fffafd;
+    font-size: 15px;
+}
+
+
+.sx-bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;
+justify-content:space-around;align-items:center;background:#fff;
+border-top:1px solid #f1d5e3;padding:8px 3px calc(8px + env(safe-area-inset-bottom));
+z-index:9999;box-shadow:0 -3px 12px #d96c9910}
+.sx-bottom-nav a{flex:1;text-align:center;text-decoration:none;color:#986d82;
+padding:5px 1px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.sx-bottom-nav a span{font-size:22px;line-height:24px}
+.sx-bottom-nav a small{font-size:11px}
+.sx-bottom-nav a.active{color:#c84682;font-weight:bold}
+body{padding-bottom:85px!important}
+
+</style>
+<style>
+
+/* Original green bottom navigation */
+.sx-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-height: 80px;
+    box-sizing: border-box;
+    background: #80c342;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px 6px;
+    z-index: 9999;
+}
+
+.sx-bottom-nav a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+    min-height: 48px;
+    border-radius: 30px;
+}
+
+.sx-bottom-nav a.active {
+    background: white;
+    color: #222;
+}
+
+</style>
+</head>
+<body>
+<header class="top">TESLA</header>
+<main class="page">
+{% with messages = get_flashed_messages() %}
+{% for message in messages %}
+<div class="flash" style="padding:14px;margin:12px 0;border:1px solid #edb0ce;border-radius:12px;background:#fff0f7;color:#a42b62;font-weight:bold;text-align:center">
+🎉 {{ message }}
+</div>
+{% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</main>
+{% include "_bottom_nav.html" %}
+</body>
+</html>

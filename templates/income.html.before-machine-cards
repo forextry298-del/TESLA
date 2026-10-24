@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Income | Space X{% endblock %}
+{% block content %}
+<style>
+.sx-income-page{
+  background:#000;
+  color:#999;
+  min-height:calc(100vh - 150px);
+  padding:24px 20px 90px;
+  margin:0;
+  font-family:Arial,sans-serif;
+  font-size:15px;
+}
+.sx-income-page .sx-income-empty{
+  margin:22px 0 0;
+  padding:0;
+  color:#999;
+  font-size:15px;
+  line-height:1.5;
+}
+</style>
+<div class="sx-income-page">
+  {% if machines %}
+    {% for machine in machines %}
+      <div class="sx-income-machine">
+        {{ machine.name }}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="sx-income-empty">No machines yet. Purchase one from the AI tab.</p>
+  {% endif %}
+</div>
+{% endblock %}

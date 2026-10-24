@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="margin-top:35px">
+<h2>Welcome back</h2>
+<p class="sub">Log in to your TESLA account.</p>
+<form method="post">
+<div class="field"><label>Phone number</label><input name="phone" type="tel" required placeholder="+256..." autocomplete="tel"></div>
+<div class="field"><label>Password</label><input name="password" type="password" required placeholder="Enter password" autocomplete="current-password"></div>
+<button class="btn" type="submit">Log in</button>
+</form>
+<div class="links">New to TESLA? <a href="{{ url_for('register') }}">Register here &gt;</a></div>
+</div>
+{% endblock %}

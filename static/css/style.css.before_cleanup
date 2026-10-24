@@ -1,0 +1,147 @@
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#02070c;color:#f7f8fa}body{font-family:Georgia,"Times New Roman",serif}.page-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px 12px;background:linear-gradient(180deg,rgba(1,8,15,.25),rgba(1,5,10,.82)),url("../images/rocket-background.jpg") center center/100% 100% scroll no-repeat}.auth-panel{width:min(100%,390px);padding:24px 17px 21px;border-radius:20px;background:rgba(0,0,0,.78);backdrop-filter:blur(3px)}.brand{display:block;text-align:center;margin:0 0 21px;color:#c9dfed;font-size:14px;font-weight:bold;letter-spacing:6px;text-decoration:none}h1{text-align:center;font-size:35px;line-height:1.1;margin:0 0 7px}.subtitle{text-align:center;color:#aab5bf;font:12px/1.5 Arial,sans-serif;margin:0 0 25px}.auth-form{display:flex;flex-direction:column;gap:14px}.field{display:flex;align-items:center;gap:11px;min-width:0;min-height:59px;padding:0 15px;border:1.5px solid #c5c5c5;border-radius:18px;background:rgba(0,0,0,.78)}.field:focus-within{border-color:#c9dfed}.field-icon{color:#d3d9df;font:20px Arial,sans-serif}.field input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:white;font:15px Georgia,serif}.field input::placeholder{color:#858585;opacity:1}.primary-button{width:100%;min-height:59px;margin-top:4px;border:2px solid #c9dfed;border-radius:18px;background:#596b35;color:white;font:20px Georgia,serif;cursor:pointer}.primary-button:active{background:#748a47}.auth-switch{text-align:center;color:#d2d7dc;font:12px Arial,sans-serif;margin:21px 0 0}.auth-switch a{color:#c9dfed;text-decoration:none;font-weight:bold}.messages{font:12px Arial,sans-serif}.message{padding:9px;border-radius:9px;background:#222}.message.error{color:#ffbaba}.message.success{color:#d8f5bd}.notice{padding:14px;border:1px solid #c5c5c5;border-radius:14px;background:#0008;font:13px/1.5 Arial,sans-serif}.notice p{color:#aab5bf}.secondary-button{display:block;margin-top:16px;padding:12px;text-align:center;border-radius:14px;background:#596b35;color:white;text-decoration:none}@media(max-width:380px){.auth-panel{padding:21px 14px}.field{min-height:55px;padding:0 12px}.field input{font-size:14px}.primary-button{min-height:55px;font-size:19px}}
+.captcha-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 59px;
+  padding: 6px 8px 6px 15px;
+  border: 1.5px solid #c5c5c5;
+  border-radius: 18px;
+  background: rgba(0,0,0,.78);
+}
+.captcha-input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: 15px Georgia, serif;
+}
+.captcha-input::placeholder { color: #858585; }
+.captcha-code {
+  flex-shrink: 0;
+  padding: 12px 10px;
+  border-radius: 8px;
+  background: #fff;
+  color: #4784d7;
+  font: bold 22px Georgia, serif;
+  letter-spacing: 3px;
+}
+
+/* Space X: reduce the zoomed background appearance */
+.page-shell {
+  background-size: 100% 100%;
+  background-position: center center;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+}
+}
+.sx-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sx-bottom-nav {
+  position: fixed;
+  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  padding: 8px 2px;
+  background: #000;
+  border-top: 1px solid #181818;
+}
+.sx-bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: white;
+  text-decoration: none;
+}
+.sx-bottom-nav a span { font-size: 24px; }
+.sx-bottom-nav a small { font-size: 10px; }
+.sx-bottom-nav a.active { color: #00a9fa; }
+
+/* Compact dashboard and reference-matched bottom navigation */
+.sx-dashboard {
+  max-width: 520px !important;
+  padding: 10px 10px 82px !important;
+  font-size: 12px !important;
+}
+.sx-top { margin-bottom: 12px !important; }
+.sx-top h1 { font-size: 20px !important; }
+.sx-message-link span { font-size: 24px !important; }
+.sx-ticker { padding: 13px 0 !important; margin-bottom: 10px !important; }
+.sx-stats, .sx-team-stats { gap: 8px !important; margin-bottom: 9px !important; }
+.sx-stat strong { padding: 9px 2px !important; font-size: 14px !important; }
+.sx-stat span { padding: 7px 2px !important; font-size: 11px !important; }
+.sx-team-stats strong { padding: 9px 1px !important; font-size: 13px !important; }
+.sx-team-stats span { padding: 7px 1px !important; font-size: 9px !important; }
+.sx-actions { gap: 9px !important; margin: 12px 0 !important; }
+.sx-actions a { padding: 13px 4px !important; font-size: 14px !important; }
+.sx-message-panel { min-height: 220px !important; }
+.sx-message-panel header { padding: 11px !important; }
+.sx-message-panel header strong { font-size: 16px !important; }
+.sx-message-body { padding: 10px !important; }
+.sx-support { width: 49px !important; height: 49px !important; bottom: 76px !important; font-size: 24px !important; }
+
+/* Five evenly spaced icons and labels, matching the reference */
+.sx-bottom-nav {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 66px !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: center !important;
+  padding: 5px 2px max(5px, env(safe-area-inset-bottom)) !important;
+  background: #000 !important;
+  border-top: 1px solid #111 !important;
+  z-index: 1000 !important;
+}
+.sx-bottom-nav a {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+.sx-bottom-nav a span {
+  display: block !important;
+  font-size: 23px !important;
+  line-height: 25px !important;
+}
+.sx-bottom-nav a small {
+  display: block !important;
+  font: 10px Arial, sans-serif !important;
+  white-space: nowrap !important;
+}
+.sx-bottom-nav a.active { color: #00a9fa !important; }
+
+/* Avoid ticker movement for visitors who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sx-ticker-track { animation: none !important; }
+}
+
+/* Dashboard must use the full page, not the login card wrapper */
+.dashboard-shell {
+  display: block !important;
+  min-height: 100vh;
+  padding: 0 0 70px !important;
+  background: #000 !important;
+}
+.dashboard-shell > .sx-dashboard {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}

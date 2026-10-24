@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="text-align:center;margin:8px 0 18px">My Products</h2>
+
+<div class="card">
+  <div class="sub">Purchases recorded for your account</div>
+  {% if purchases %}
+    {% for p in purchases %}
+      <div style="padding:14px 0;border-bottom:1px solid #f1dce7">
+        <strong>{{ p['product_name'] }}</strong>
+        <div style="color:#c34c86;font-size:18px;margin:7px 0">
+          UGX {{ "{:,.0f}".format(p['amount']) }}
+        </div>
+        <div class="sub">Term: {{ p['term_days'] }} days</div>
+        <div class="sub">Purchased: {{ p['purchased_at'] }}</div>
+        <div class="sub">Status: {{ p['status']|capitalize }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div style="text-align:center;padding:45px 10px;color:#9b8d96">
+      <div style="font-size:38px">▤</div>
+      <p>No products yet</p>
+      <a href="{{ url_for('products') }}">Explore products</a>
+    </div>
+  {% endif %}
+</div>
+
+<nav class="nav">
+  <a href="{{ url_for('dashboard') }}">Home</a>
+  <a href="{{ url_for('products') }}">Products</a>
+  <a class="active" href="{{ url_for('my_products') }}">My Products</a>
+  <a href="{{ url_for('dashboard') }}#account">Mine</a>
+</nav>
+{% endblock %}
