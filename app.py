@@ -186,7 +186,34 @@ def my_team():
 @app.route("/profile")
 @login_required
 def profile():
-    return redirect(url_for("dashboard"))
+    with connect() as db:
+        user = db.execute(
+            "SELECT * FROM users WHERE id=?", (session["user_id"],)
+        ).fetchone()
+        if not user:
+            session.clear()
+            return redirect(url_for("login"))
+        invite_count = db.execute(
+            "SELECT COUNT(*) FROM users WHERE invited_by=?",
+            (user["id"],)
+        ).fetchone()[0]
+    return render_template(
+        "profile.html",
+        user=user,
+        balance=user["balance"] if "balance" in user.keys() else 0,
+        wallet=user["balance"] if "balance" in user.keys() else 0,
+        invite_count=invite_count,
+        team_count=invite_count,
+        deposit_total=0,
+        withdrawal_total=0,
+        ai_income=0,
+        today_income=0,
+        team_income=0,
+        last_salary=0,
+        this_salary=0,
+        invited_last=0,
+        invited_this=0
+    )
 
 @app.route("/logout")
 def logout():
@@ -218,6 +245,18 @@ def init_transactions_db():
         )""")
 
 init_transactions_db()
+
+@app.route("/transactions")
+@login_required
+def transactions():
+    with connect() as db:
+        rows = db.execute("""
+            SELECT kind, amount, method, reference, status, created_at
+            FROM transactions
+            WHERE user_id=?
+            ORDER BY id DESC
+        """, (session["user_id"],)).fetchall()
+    return render_template("transactions.html", transactions=rows)
 
 @app.route("/deposit", methods=["GET", "POST"])
 @login_required
