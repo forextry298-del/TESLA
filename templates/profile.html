@@ -3,13 +3,21 @@
 {% block content %}
 <style>
 .mine{padding:12px 12px 90px;background:#fffafd;color:#222;font-family:Arial,sans-serif;max-width:720px;margin:auto}
-.head{background:#e879ad;color:white;padding:18px 18px;border-radius:0 0 24px 24px}
-.user{display:flex;gap:14px;align-items:center;margin-bottom:18px}.avatar{width:65px;height:65px;border-radius:50%;background:white;color:#e879ad;display:grid;place-items:center;font-size:28px;font-weight:bold}
-.phone{font-size:22px;overflow-wrap:anywhere}.level{background:white;color:#e879ad;border-radius:20px;padding:5px 20px;display:inline-block;margin-top:8px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.amount{font-size:32px}.actions{display:flex;gap:15px}.actions a{color:white;text-decoration:none;text-align:center;font-size:13px}.actions b{display:block;font-size:27px;margin-bottom:8px}
+.head{background:#e879ad;color:white;padding:14px 16px;border-radius:0 0 22px 22px}
+.user{display:flex;gap:14px;align-items:center;margin-bottom:12px}.avatar{width:52px;height:52px;border-radius:50%;background:white;color:#e879ad;display:grid;place-items:center;font-size:28px;font-weight:bold}
+.phone{font-size:19px;overflow-wrap:anywhere}.level{background:white;color:#e879ad;border-radius:20px;padding:5px 20px;display:inline-block;margin-top:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:nowrap;min-width:0}.amount{font-size:28px}.actions{display:flex;gap:8px;flex:1;justify-content:space-around;min-width:0}.actions a{color:white;text-decoration:none;text-align:center;font-size:12px;flex:1;min-width:0;white-space:nowrap}.actions b{display:block;font-size:25px;margin-bottom:5px}
 .banner{height:210px;background:#fff;border:2px dashed #e879ad;border-radius:18px;margin:18px 0;display:grid;place-items:center;color:#666;text-align:center}
 .menu{background:white;border-radius:14px;overflow:hidden}.menu a{display:block;padding:22px;border-bottom:1px solid #eee;text-decoration:none;color:#222;font-size:17px}.menu a:last-child{border:0}
 .extra details{background:white;border-radius:12px;padding:15px;margin-top:12px}.extra summary{font-weight:bold;cursor:pointer}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stats div{background:#fff0f6;padding:12px;border-radius:8px;overflow-wrap:anywhere}
+
+.task-banner{height:125px!important;display:flex!important;flex-direction:row!important;align-items:center;overflow:hidden;background:#fff;border-radius:18px;margin:14px 0;text-decoration:none;color:#29232a;width:100%;box-sizing:border-box}
+.task-banner img{display:block;width:45%!important;height:125px!important;flex:0 0 45%;object-fit:cover;object-position:center}
+.task-copy{padding:8px;min-width:0;flex:1;text-align:right;box-sizing:border-box}
+.task-copy h2{font-size:19px;line-height:1.15;margin:0 0 6px}
+.task-copy p{font-size:12px;line-height:1.3;margin:0 0 7px}
+.task-copy span{display:inline-block;border:1px solid #e879ad;color:#cf568f;border-radius:18px;padding:5px 9px;font-size:11px}
+
 </style>
 <div class="mine">
 <section class="head"><div class="user"><div class="avatar">T</div><div><div class="phone">{{ user.phone if user is defined and user.phone is defined else "TESLA Member" }}</div><span class="level">Lv1</span></div></div>
