@@ -1,19 +1,62 @@
 {% extends "base.html" %}
+{% block title %}Balance Details | TESLA{% endblock %}
 {% block content %}
-<div style="max-width:760px;margin:20px auto;padding:16px">
-<h2>Transaction Records</h2>
-{% if transactions %}
+<style>
+body:has(.records-page){background:#fff!important}
+.records-page{min-height:calc(100vh - 60px);background:linear-gradient(180deg,#8cc653 0%,#a8d48a 48%,#e1edda 100%);font-family:Arial,sans-serif;color:#333;margin:-16px -12px 0}
+.records-header{height:94px;background:white;display:flex;align-items:center;justify-content:center;gap:16px;color:#279c45;font-size:24px}
+.records-back{position:absolute;left:25px;top:20px;color:#111;text-decoration:none;font-size:36px;font-weight:300}
+.records-brand{font-size:26px;font-weight:bold;color:#79bd27;letter-spacing:-1px}
+.records-tabs{display:flex;background:white;height:72px;align-items:stretch}
+.records-tabs button{flex:1;border:0;background:white;color:#777;font-size:16px;position:relative}
+.records-tabs button.active{color:#239e40;font-weight:bold}
+.records-tabs button.active:after{content:"";position:absolute;bottom:0;left:43%;width:14%;height:5px;background:#36a9ef;border-radius:5px}
+.records-list{padding:26px 20px;min-height:calc(100vh - 250px)}
+.record-card{background:#fff;border-radius:15px;padding:20px 18px;margin-bottom:14px;box-shadow:0 2px 5px #5a9c3520}
+.record-name{font-size:17px;color:#299c45;margin-bottom:12px}
+.record-amount{float:right;color:#279e43;font-size:19px;margin-left:8px}
+.record-date{font-size:15px;color:#777;overflow-wrap:anywhere}
+.record-status{font-size:13px;color:#777;margin-top:7px}
+.record-empty{text-align:center;color:#777;font-size:19px;padding:28px 0}
+@media(max-width:380px){.records-header{font-size:21px}.records-brand{font-size:23px}.records-tabs button{font-size:14px}.record-amount{font-size:16px}}
+</style>
+<div class="records-page">
+<header class="records-header">
+<a class="records-back" href="{{ url_for('profile') }}">‹</a>
+<span class="records-brand">◉</span><span>Balance Details</span>
+</header>
+<nav class="records-tabs">
+<button type="button" class="active" data-kind="income" onclick="showRecords('income',this)">Income Records</button>
+<button type="button" data-kind="withdrawal" onclick="showRecords('withdrawal',this)">Withdrawal Records</button>
+</nav>
+<div class="records-list">
 {% for item in transactions %}
-<div style="background:white;border-radius:10px;padding:14px;margin:10px 0;box-shadow:0 2px 8px #ddd">
-<strong>{{ item["kind"]|title }}</strong>
-<span style="float:right">UGX {{ "%.2f"|format(item["amount"]) }}</span>
-<p>{{ item["method"] }} · {{ item["status"]|title }}</p>
-<p>{{ item["created_at"] }}{% if item["reference"] %} · Ref: {{ item["reference"] }}{% endif %}</p>
+<div class="record-card" data-kind="{{ 'withdrawal' if item['kind'] in ['withdrawal','withdraw'] else 'income' }}">
+<div class="record-name">
+{{ 'Withdrawal' if item['kind'] in ['withdrawal','withdraw'] else (item['kind']|title) }}
+<span class="record-amount">{{ '-' if item['kind'] in ['withdrawal','withdraw'] else '+' }}UGX {{ "{:,.0f}".format(item['amount']|float) }}</span>
+</div>
+<div class="record-date">{{ item['created_at'] }}</div>
+<div class="record-status">{{ item['status']|title }}{% if item['reference'] %} · Ref: {{ item['reference'] }}{% endif %}</div>
 </div>
 {% endfor %}
-{% else %}
-<p>No transactions yet.</p>
-{% endif %}
-<a href="{{ url_for('profile') }}">Back to Mine</a>
+<div class="record-empty" id="records-empty" {% if transactions %}hidden{% endif %}>No more data</div>
 </div>
+</div>
+<script>
+function showRecords(kind,button){
+ document.querySelectorAll('.records-tabs button').forEach(b=>b.classList.toggle('active',b===button));
+ let visible=0;
+ document.querySelectorAll('.record-card').forEach(card=>{
+   let show=card.dataset.kind===kind;
+   card.hidden=!show;
+   if(show)visible++;
+ });
+ document.getElementById('records-empty').hidden=visible>0;
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ let b=document.querySelector('.records-tabs button.active');
+ if(b)showRecords('income',b);
+});
+</script>
 {% endblock %}
