@@ -2,20 +2,23 @@
 {% block title %}Profile | Space X{% endblock %}
 {% block content %}
 <style>
-.mine{padding:12px 12px 90px;background:#f5f7f5;color:#222;font-family:Arial,sans-serif;max-width:720px;margin:auto}
-.head{background:#e879ad;color:white;padding:24px 18px;border-radius:0 0 24px 24px}
-.user{display:flex;gap:14px;align-items:center;margin-bottom:35px}.avatar{width:65px;height:65px;border-radius:50%;background:white;color:#e879ad;display:grid;place-items:center;font-size:28px;font-weight:bold}
+.mine{padding:12px 12px 90px;background:#fffafd;color:#222;font-family:Arial,sans-serif;max-width:720px;margin:auto}
+.head{background:#e879ad;color:white;padding:18px 18px;border-radius:0 0 24px 24px}
+.user{display:flex;gap:14px;align-items:center;margin-bottom:18px}.avatar{width:65px;height:65px;border-radius:50%;background:white;color:#e879ad;display:grid;place-items:center;font-size:28px;font-weight:bold}
 .phone{font-size:22px;overflow-wrap:anywhere}.level{background:white;color:#e879ad;border-radius:20px;padding:5px 20px;display:inline-block;margin-top:8px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.amount{font-size:32px}.actions{display:flex;gap:15px}.actions a{color:white;text-decoration:none;text-align:center;font-size:13px}.actions b{display:block;font-size:27px;margin-bottom:8px}
-.banner{height:210px;background:#e6e9e6;border-radius:18px;margin:18px 0;display:grid;place-items:center;color:#666;text-align:center}
+.banner{height:210px;background:#fff;border:2px dashed #e879ad;border-radius:18px;margin:18px 0;display:grid;place-items:center;color:#666;text-align:center}
 .menu{background:white;border-radius:14px;overflow:hidden}.menu a{display:block;padding:22px;border-bottom:1px solid #eee;text-decoration:none;color:#222;font-size:17px}.menu a:last-child{border:0}
-.extra details{background:white;border-radius:12px;padding:15px;margin-top:12px}.extra summary{font-weight:bold;cursor:pointer}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stats div{background:#f3f6f2;padding:12px;border-radius:8px;overflow-wrap:anywhere}
+.extra details{background:white;border-radius:12px;padding:15px;margin-top:12px}.extra summary{font-weight:bold;cursor:pointer}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stats div{background:#fff0f6;padding:12px;border-radius:8px;overflow-wrap:anywhere}
 </style>
 <div class="mine">
 <section class="head"><div class="user"><div class="avatar">T</div><div><div class="phone">{{ user.phone if user is defined and user.phone is defined else "TESLA Member" }}</div><span class="level">Lv1</span></div></div>
 <div class="row"><div><div>UGX</div><div class="amount">{{ "{:,.0f}".format(balance|float) }}</div><div>Balance</div></div>
 <div class="actions"><a href="{{ url_for("deposit") }}"><b>＋</b>Recharge</a><a href="{{ url_for("withdraw") }}"><b>↗</b>Withdraw</a><a href="{{ url_for("transactions") }}"><b>▤</b>Records</a></div></div></section>
-<div class="banner"><br></div>
+<a class="task-banner" href="{{ url_for('dashboard') }}#product">
+<img src="{{ url_for('static', filename='images/task-center-tesla.jpg') }}" alt="Tesla">
+<div class="task-copy"><h2>Task Center</h2><p>Complete tasks and get generous bonuses</p><span>GO now -&gt;</span></div>
+</a>
 <section class="menu"><a href="{{ url_for("dashboard") }}">ⓘ　About us　›</a><a href="{{ url_for("dashboard") }}#regulation">♧　Regulation　›</a><a href="{{ url_for("transactions") }}">▤　Records　›</a><a href="{{ url_for("dashboard") }}#customer-service">☏　Customer Service　›</a></section>
 <section class="extra"><details><summary>Account balances and earnings</summary><div class="stats"><div>Wallet<br>{{ "%.2f"|format(wallet) }} USD</div><div>Balance<br>{{ "%.2f"|format(balance) }} USD</div><div>Deposits<br>{{ "%.2f"|format(deposit_total) }} USD</div><div>Withdrawals<br>{{ "%.2f"|format(withdrawal_total) }} USD</div><div>AI income<br>{{ "%.2f"|format(ai_income) }} USD</div><div>Today earnings<br>{{ "%.2f"|format(today_income) }} USD</div><div>Invites<br>{{ invite_count }}</div><div>Team<br>{{ team_count }}</div></div></details><details><summary>Invite friends and team</summary><p><a href="{{ url_for("invite") }}">Invite Friends</a></p><p><a href="{{ url_for("team") }}">My Team</a></p></details><details><summary>Salary and rewards</summary><div class="stats"><div>Last month salary<br>{{ "%.2f"|format(last_salary) }} USD</div><div>This month salary<br>{{ "%.2f"|format(this_salary) }} USD</div><div>Invited last month<br>{{ invited_last }}</div><div>Invited this month<br>{{ invited_this }}</div></div></details></section>
 </div>
