@@ -183,6 +183,12 @@ def invite():
 def my_team():
     return redirect(url_for("team"))
 
+
+@app.route("/about")
+@login_required
+def about_us():
+    return render_template("about.html")
+
 @app.route("/profile")
 @login_required
 def profile():

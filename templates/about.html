@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}About Us | TESLA{% endblock %}
+{% block content %}
+<style>
+.about-page{font-family:Arial,sans-serif;background:#f1f1f1;min-height:100vh;color:#222;padding-bottom:90px}
+.about-head{height:88px;background:#fff;display:flex;align-items:center;justify-content:center;position:relative;color:#299b42;font-size:23px}
+.about-head a{position:absolute;left:22px;color:#222;text-decoration:none;font-size:34px}
+.about-body{padding:18px 20px;font-size:16px;line-height:1.75}
+.about-body p{margin:0 0 18px}
+.about-body h3{color:#299b42;font-size:19px;margin:22px 0 8px}
+</style>
+<div class="about-page">
+<header class="about-head"><a href="{{ url_for('profile') }}">‹</a><span>TESLA　About Us</span></header>
+<article class="about-body">
+<p>TESLA is a digital platform designed to give members a convenient place to access platform services, manage their accounts, review transactions, and explore the features available to registered users. Our goal is to provide a clear and accessible experience through a simple mobile-friendly interface.</p>
+
+<p>We believe that a useful digital platform should be easy to navigate. TESLA brings important account features together in one place, helping members find their balance information, deposit and withdrawal services, transaction records, team features, and customer support without unnecessary complexity.</p>
+
+<h3>Our Mission</h3>
+<p>Our mission is to build a reliable, accessible, and user-friendly digital experience. We aim to make account information easier to understand, make platform navigation straightforward, and provide members with clear access to the services available to them.</p>
+
+<h3>Our Platform</h3>
+<p>The TESLA platform includes account registration and login, balance information, deposit requests, withdrawal requests, transaction history, and referral and team features. Available services may depend on account status and the platform's current operating rules.</p>
+
+<p>Members should always review the details of any transaction before submitting it. Transaction requests may require verification and approval. A request shown as pending should not be treated as completed until its status has been confirmed.</p>
+
+<h3>Account Security</h3>
+<p>We encourage every member to keep their login credentials private, use a secure password, and access their account through the official platform address. Never share your password or verification codes with another person. If you notice unfamiliar account activity, contact customer support through the available platform channels.</p>
+
+<h3>Transparency and Responsible Use</h3>
+<p>Members should read the applicable platform rules, transaction conditions, fees, and withdrawal requirements before using any service. Any investment-related activity involves risk. Returns are not guaranteed, and users should not invest money they cannot afford to lose. Please verify all claims and terms independently before making financial decisions.</p>
+
+<h3>Customer Service</h3>
+<p>TESLA aims to make help accessible when members have questions about their accounts or platform services. When contacting support, provide a clear description of the issue and any relevant transaction reference. Never send your password or other confidential authentication details in a support message.</p>
+
+<h3>Our Commitment</h3>
+<p>We aim to continue improving the platform's usability, clarity, and account-management experience. Thank you for visiting TESLA and taking time to learn about our platform. Please use the available features responsibly and review the platform rules whenever you need clarification.</p>
+</article>
+</div>
+{% endblock %}
