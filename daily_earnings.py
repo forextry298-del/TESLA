@@ -1,9 +1,10 @@
 import os
+from pathlib import Path
 import sqlite3
 from datetime import date, datetime
 from machine_catalog import MACHINE_CATALOG
 
-DB = os.environ.get("DATABASE_PATH", "tesla.db")
+DB = os.environ.get("DATABASE_PATH") or str(Path(__file__).resolve().parent / "tesla.db")
 
 def run():
     today = date.today()
