@@ -293,8 +293,6 @@ init_task_rewards_db()
 @app.route("/vip-tasks")
 @login_required
 def vip_tasks():
-    target = 3
-    reward_amount = 5000
     user_id = session["user_id"]
 
     with connect() as db:
@@ -319,10 +317,17 @@ def vip_tasks():
               )
         """, (user_id,)).fetchone()[0]
 
-        reward = db.execute("""
-            SELECT amount FROM task_rewards
-            WHERE user_id=? AND task_code='LV1_INVITE_3'
-        """, (user_id,)).fetchone()
+        reward_total = db.execute(
+            "SELECT COALESCE(SUM(amount), 0) FROM task_rewards WHERE user_id=?",
+            (user_id,)
+        ).fetchone()[0]
+
+        claimed_codes = {
+            row["task_code"] for row in db.execute(
+                "SELECT task_code FROM task_rewards WHERE user_id=?",
+                (user_id,)
+            ).fetchall()
+        }
 
     referral_code = user["invite_code"]
     referral_link = request.url_root.rstrip("/") + url_for(
@@ -332,15 +337,15 @@ def vip_tasks():
     return render_template(
         "vip_tasks.html",
         qualified_count=qualified_count,
-        reward_total=reward["amount"] if reward else 0,
+        reward_total=reward_total,
         reward_rate=0,
         referral_code=referral_code,
         referral_link=referral_link,
-        target=target,
-        reward_amount=reward_amount,
-        reward_claimed=bool(reward)
+        target=3,
+        reward_amount=5000,
+        reward_claimed="LV1_INVITE_3" in claimed_codes,
+        claimed_codes=claimed_codes
     )
-
 
 @app.route("/transactions")
 @login_required
@@ -473,6 +478,49 @@ def init_product_tables():
 
 init_product_tables()
 
+
+def award_team_milestones(db, purchaser_id):
+    """Update each ancestor's team investment milestones once per reward."""
+    current = purchaser_id
+    visited = set()
+    while current and current not in visited:
+        visited.add(current)
+        row = db.execute(
+            "SELECT invited_by FROM users WHERE id=?", (current,)
+        ).fetchone()
+        if not row or not row["invited_by"]:
+            break
+        inviter_id = row["invited_by"]
+
+        total = db.execute("""
+            WITH RECURSIVE downline(id) AS (
+                SELECT id FROM users WHERE invited_by=?
+                UNION
+                SELECT u.id FROM users u JOIN downline d ON u.invited_by=d.id
+            )
+            SELECT COALESCE(SUM(p.amount), 0)
+            FROM purchases p JOIN downline d ON d.id=p.user_id
+            WHERE p.status='active'
+        """, (inviter_id,)).fetchone()[0]
+
+        for target, code, amount in [
+            (2000000, "LV1_TEAM_2000000", 20000),
+            (7000000, "LV1_TEAM_7000000", 70000),
+            (15000000, "LV1_TEAM_15000000", 150000),
+            (40000000, "LV1_TEAM_40000000", 400000),
+        ]:
+            if total >= target:
+                cur = db.execute("""
+                    INSERT OR IGNORE INTO task_rewards(user_id, task_code, amount)
+                    VALUES (?, ?, ?)
+                """, (inviter_id, code, amount))
+                if cur.rowcount == 1:
+                    db.execute(
+                        "UPDATE users SET balance=balance+? WHERE id=?",
+                        (amount, inviter_id)
+                    )
+        current = inviter_id
+
 @app.route("/products")
 @login_required
 def products():
@@ -529,6 +577,25 @@ def invest(product_id):
                 VALUES (?, ?, ?, ?, ?)
             """, (session["user_id"], product["id"], product["name"],
                   product["price"], product["term"]))
+
+            purchase_rewards = {
+                4: 2500, 5: 5000, 6: 10000,
+                7: 25000, 8: 50000
+            }
+            reward = purchase_rewards.get(product["id"])
+            if reward:
+                code = "LV1_BUY_VIP" + str(product["id"])
+                cur = db.execute("""
+                    INSERT OR IGNORE INTO task_rewards
+                    (user_id, task_code, amount)
+                    VALUES (?, ?, ?)
+                """, (session["user_id"], code, reward))
+                if cur.rowcount == 1:
+                    db.execute(
+                        "UPDATE users SET balance=balance+? WHERE id=?",
+                        (reward, session["user_id"])
+                    )
+            award_team_milestones(db, session["user_id"])
             db.commit()
             flash("Purchase recorded successfully.")
             return redirect(url_for("my_products"))
@@ -656,19 +723,25 @@ def admin_approve_deposit(transaction_id):
                               )
                         """, (inviter_id,)).fetchone()[0]
 
-                        if qualified >= 3:
-                            cur = db.execute("""
-                                INSERT OR IGNORE INTO task_rewards
-                                    (user_id, task_code, amount)
-                                VALUES (?, 'LV1_INVITE_3', 5000)
-                            """, (inviter_id,))
+                        milestones = [
+                            (3, "LV1_INVITE_3", 5000),
+                            (10, "LV1_INVITE_10", 15000),
+                            (30, "LV1_INVITE_30", 40000),
+                        ]
+                        for target, code, amount in milestones:
+                            if qualified >= target:
+                                cur = db.execute("""
+                                    INSERT OR IGNORE INTO task_rewards
+                                        (user_id, task_code, amount)
+                                    VALUES (?, ?, ?)
+                                """, (inviter_id, code, amount))
 
-                            if cur.rowcount == 1:
-                                db.execute(
-                                    "UPDATE users SET balance=balance+5000 WHERE id=?",
-                                    (inviter_id,)
-                                )
-                                reward_paid = True
+                                if cur.rowcount == 1:
+                                    db.execute(
+                                        "UPDATE users SET balance=balance+? WHERE id=?",
+                                        (amount, inviter_id)
+                                    )
+                                    reward_paid = True
 
                 db.commit()
                 flash("Deposit approved and depositor balance credited once.")

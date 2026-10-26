@@ -17,15 +17,82 @@
 .vip-code{font-size:20px;letter-spacing:2px;color:#db2777;overflow-wrap:anywhere;margin-top:8px}
 </style>
 <div class="vip-page">
-  <div class="vip-head"><a href="{{ url_for('profile') }}">‹</a><div><div class="vip-title">Task Center</div><div class="vip-muted">Invite friends and earn Level 1 rewards</div></div></div>
+  <div class="vip-head"><a href="{{ url_for('profile') }}">‹</a><div><div class="vip-title">Task Center</div><div class="vip-muted">Invite and Earn · All LV1 Tasks</div></div></div>
   <section class="vip-card">
-    <div class="vip-title">Level 1 Invitation Task</div>
+    <div class="vip-title">LV1 Invite and Earn</div>
     <div class="vip-muted">Invite a new member using your personal referral link. A member qualifies after their first deposit is approved. Each member counts once.</div>
     <div class="vip-stats">
       <div class="vip-stat"><span class="vip-muted">Qualified members</span><strong>{{ qualified_count }}</strong></div>
-      <div class="vip-stat"><span class="vip-muted">Rewards earned</span><strong>${{ '%.3f'|format(reward_total) }}</strong></div>
+      <div class="vip-stat"><span class="vip-muted">Cumulative rewards</span><strong>UGX {{ '{:,.0f}'.format(reward_total) }}</strong></div>
     </div>
   </section>
+
+  {% for task in [
+    {'target':3,'reward':5000,'code':'LV1_INVITE_3'},
+    {'target':10,'reward':15000,'code':'LV1_INVITE_10'},
+    {'target':30,'reward':40000,'code':'LV1_INVITE_30'}
+  ] %}
+  <section class="vip-card">
+    <div class="vip-title">Invite {{ task.target }} Level 1 investors</div>
+    <div class="vip-muted">{% if task.code in claimed_codes %}✓ Reward claimed{% elif qualified_count >= task.target %}Completed · Reward processing{% else %}In progress{% endif %}</div>
+    <div class="vip-muted">Invite direct members who each make an approved deposit of at least UGX 20,000.</div>
+    <div class="vip-stats">
+      <div class="vip-stat">
+        <span class="vip-muted">Task reward</span>
+        <strong>UGX {{ "{:,.0f}".format(task.reward) }}</strong>
+      </div>
+      <div class="vip-stat">
+        <span class="vip-muted">Progress</span>
+        <strong>{{ [qualified_count, task.target]|min }}/{{ task.target }}</strong>
+      </div>
+    </div>
+    <div style="height:8px;background:#f7e6ee;border-radius:8px;margin-top:14px;overflow:hidden">
+      <div style="height:8px;background:#e879ad;width:{{ ([qualified_count, task.target]|min / task.target * 100)|int }}%"></div>
+    </div>
+    <a class="vip-btn" href="{{ url_for('invite') }}">Invite Friends</a>
+  </section>
+  {% endfor %}
+
+
+  <section class="vip-card">
+    <div class="vip-title">VIP Purchase Tasks</div>
+    <div class="vip-muted">Purchase the matching VIP product to complete each task. Each purchase task reward is paid once.</div>
+    {% for task in [
+      {'vip':4,'reward':2500,'code':'LV1_BUY_VIP4'},
+      {'vip':5,'reward':5000,'code':'LV1_BUY_VIP5'},
+      {'vip':6,'reward':10000,'code':'LV1_BUY_VIP6'},
+      {'vip':7,'reward':25000,'code':'LV1_BUY_VIP7'},
+      {'vip':8,'reward':50000,'code':'LV1_BUY_VIP8'}
+    ] %}
+    <div class="vip-row">
+      <div>
+        <strong>Purchase VIP{{ task.vip }} Virtuix Omni VR</strong>
+        <div class="vip-muted">{% if task.code in claimed_codes %}✓ Reward claimed{% else %}Reward: UGX {{ "{:,.0f}".format(task.reward) }}{% endif %}</div>
+      </div>
+      <a href="{{ url_for('products') }}" style="color:#db2777;font-weight:bold">View</a>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="vip-card">
+    <div class="vip-title">LV1 Team Investment Tasks</div>
+    <div class="vip-muted">Team investment means the total recorded purchases by your invited downline. Rewards are one-time per milestone.</div>
+    {% for task in [
+      {'target':2000000,'reward':20000,'code':'LV1_TEAM_2000000'},
+      {'target':7000000,'reward':70000,'code':'LV1_TEAM_7000000'},
+      {'target':15000000,'reward':150000,'code':'LV1_TEAM_15000000'},
+      {'target':40000000,'reward':400000,'code':'LV1_TEAM_40000000'}
+    ] %}
+    <div class="vip-row">
+      <div>
+        <strong>Team reaches UGX {{ "{:,.0f}".format(task.target) }}</strong>
+        <div class="vip-muted">{% if task.code in claimed_codes %}✓ Reward claimed{% else %}Reward: UGX {{ "{:,.0f}".format(task.reward) }}{% endif %}</div>
+      </div>
+      <span style="color:#db2777;font-weight:bold">{% if task.code in claimed_codes %}Done{% else %}LV1{% endif %}</span>
+    </div>
+    {% endfor %}
+  </section>
+
   <section class="vip-card">
     <div class="vip-muted">YOUR INVITATION CODE</div>
     <div class="vip-code" id="vip-code">{{ referral_code }}</div>
