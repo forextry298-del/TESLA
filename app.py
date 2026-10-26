@@ -448,23 +448,6 @@ def my_products():
                            purchases=purchases)
 
 
-ADMIN_PHONE = "0758878297"
-
-@app.route("/admin")
-@login_required
-def admin_home():
-    with connect() as db:
-        user = db.execute(
-            "SELECT phone FROM users WHERE id=?",
-            (session["user_id"],)
-        ).fetchone()
-
-    if not user or user["phone"] != ADMIN_PHONE:
-        flash("You are not authorized to access the admin panel.")
-        return redirect(url_for("dashboard"))
-
-    return render_template("admin_home.html")
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
