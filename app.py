@@ -291,27 +291,48 @@ def deposit():
     if request.method == "POST":
         try:
             amount = float(request.form.get("amount", "0"))
-        except ValueError:
+        except (TypeError, ValueError):
             amount = 0
 
         method = request.form.get("method", "").strip()
         reference = request.form.get("reference", "").strip()
 
-        if not 1000 <= amount <= 5000000:
-            flash("Enter a deposit amount between UGX 1,000 and UGX 5,000,000.")
-        elif method not in ("MTN Mobile Money", "Airtel Money", "Bank"):
-            flash("Select a valid payment method.")
+        if not 20000 <= amount <= 5000000:
+            flash("Minimum deposit is UGX 20,000. Maximum deposit is UGX 5,000,000.")
+        elif method not in ("MTN Mobile Money", "Airtel Money"):
+            flash("Select MTN Mobile Money or Airtel Money.")
+        elif not reference or len(reference) > 100:
+            flash("Enter a valid payment reference.")
         else:
             with connect() as db:
-                db.execute("""
+                cursor = db.execute("""
                     INSERT INTO transactions
-                    (user_id, kind, amount, method, reference)
-                    VALUES (?, 'deposit', ?, ?, ?)
+                    (user_id, kind, amount, method, reference, status)
+                    VALUES (?, 'deposit', ?, ?, ?, 'pending')
                 """, (session["user_id"], amount, method, reference))
-            flash("Deposit request submitted. It will remain pending until verified.")
-            return redirect(url_for("dashboard"))
+                deposit_id = cursor.lastrowid
+            return redirect(url_for(
+                "deposit_instructions", transaction_id=deposit_id
+            ))
 
-    return render_template("transaction.html", kind="deposit")
+    return render_template("deposit.html")
+
+
+@app.route("/deposit/instructions/<int:transaction_id>")
+@login_required
+def deposit_instructions(transaction_id):
+    with connect() as db:
+        deposit = db.execute("""
+            SELECT id, amount, method, reference, status
+            FROM transactions
+            WHERE id=? AND user_id=? AND kind='deposit'
+        """, (transaction_id, session["user_id"])).fetchone()
+
+    if deposit is None:
+        flash("Deposit request not found.")
+        return redirect(url_for("deposit"))
+
+    return render_template("deposit_instructions.html", deposit=deposit)
 
 @app.route("/withdraw", methods=["GET", "POST"])
 @login_required
