@@ -3,7 +3,7 @@ import sqlite3
 from datetime import date, datetime
 from machine_catalog import MACHINE_CATALOG
 
-DB = os.environ.get("DATABASE_PATH", "space_x.db")
+DB = os.environ.get("DATABASE_PATH", "tesla.db")
 
 def run():
     today = date.today()
@@ -62,3 +62,69 @@ def run():
 
 if __name__ == "__main__":
     run()
+
+
+def run_vip():
+    from zoneinfo import ZoneInfo
+    from datetime import datetime
+    con = sqlite3.connect(DB, timeout=30)
+    con.row_factory = sqlite3.Row
+    credited = 0
+    today = datetime.now(ZoneInfo("Africa/Kampala")).date().isoformat()
+    try:
+        con.execute("BEGIN IMMEDIATE")
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS vip_daily_earnings (
+                purchase_id INTEGER NOT NULL,
+                earning_date TEXT NOT NULL,
+                user_id INTEGER NOT NULL,
+                amount REAL NOT NULL,
+                PRIMARY KEY (purchase_id, earning_date)
+            )
+        """)
+        products = {
+            1: 5000, 2: 13000, 3: 32400, 4: 70000,
+            5: 145000, 6: 300000, 7: 775000, 8: 2000000
+        }
+        rows = con.execute("""
+            SELECT id, user_id, product_id, purchased_at, term_days, status
+            FROM purchases
+        """).fetchall()
+        for r in rows:
+            daily = products.get(r["product_id"])
+            if not daily or (r["status"] or "").lower() not in ("active", "successful", "approved"):
+                continue
+            try:
+                start = datetime.fromisoformat(
+                    str(r["purchased_at"]).replace("Z", "+00:00")
+                ).date()
+            except (ValueError, TypeError):
+                continue
+            day_num = (datetime.fromisoformat(today).date() - start).days + 1
+            if day_num < 1 or day_num > (r["term_days"] or 360):
+                continue
+            cur = con.execute("""
+                INSERT OR IGNORE INTO vip_daily_earnings
+                (purchase_id, earning_date, user_id, amount)
+                VALUES (?, ?, ?, ?)
+            """, (r["id"], today, r["user_id"], daily))
+            if cur.rowcount == 1:
+                con.execute(
+                    "UPDATE users SET balance=balance+? WHERE id=?",
+                    (daily, r["user_id"])
+                )
+                credited += 1
+        con.commit()
+        print(f"VIP daily earnings complete: {credited} credits.")
+    except Exception:
+        con.rollback()
+        raise
+    finally:
+        con.close()
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "vip":
+        run_vip()
+    else:
+        run()

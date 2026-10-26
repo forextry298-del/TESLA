@@ -1,0 +1,12 @@
+services:
+  - type: cron
+    name: space-x-daily-earnings
+    runtime: python
+    schedule: "0 21 * * *"
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python daily_earnings.py vip"
+    envVars:
+      - key: SPACE_X_URL
+        sync: false
+      - key: EARNINGS_CRON_SECRET
+        sync: false
