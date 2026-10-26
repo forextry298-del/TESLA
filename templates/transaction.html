@@ -10,6 +10,12 @@
       <input name="amount" type="number" min="1000" max="5000000"
              step="1000" placeholder="Enter amount" required>
     </div>
+    {% if kind == 'withdrawal' %}
+    <p class="sub" style="background:#fff0f7;border-radius:10px;padding:12px">
+      Withdrawal charge: <strong>5%</strong>. You receive 95% of the requested amount after approval.
+      Example: UGX 10,000 request − UGX 500 charge = UGX 9,500 payout.
+    </p>
+    {% endif %}
 
     <div class="field">
       <label>Payment method</label>

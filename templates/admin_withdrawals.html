@@ -31,7 +31,11 @@ button{border:0;border-radius:9px;padding:12px 8px;font-weight:bold;cursor:point
 {% for w in withdrawals %}
 <div class="card">
 <b>Request #{{ w['id'] }}</b>
-<div class="amount">UGX {{ "{:,.0f}".format(w['amount']) }}</div>
+<div class="amount">Requested: UGX {{ "{:,.0f}".format(w['amount']) }}</div>
+<div class="meta">
+Withdrawal charge (5%): <strong>UGX {{ "{:,.2f}".format(w['amount'] * 0.05) }}</strong><br>
+Net payout (95%): <strong>UGX {{ "{:,.2f}".format(w['amount'] * 0.95) }}</strong>
+</div>
 <div class="meta">
 User: {{ w['phone'] }}<br>
 Method: {{ w['method'] }}<br>

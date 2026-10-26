@@ -844,7 +844,9 @@ def admin_mark_withdrawal_paid(transaction_id):
                         (txn["amount"], txn["user_id"])
                     )
                     db.commit()
-                    flash("Withdrawal marked paid and balance deducted once.")
+                    fee = float(txn["amount"]) * 0.05
+                    net_payout = float(txn["amount"]) - fee
+                    flash(f"Withdrawal marked paid. Fee: UGX {fee:,.2f}; net payout: UGX {net_payout:,.2f}. Full request deducted once.")
     except Exception:
         db.rollback()
         raise
