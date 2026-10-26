@@ -290,6 +290,12 @@ def init_task_rewards_db():
 
 init_task_rewards_db()
 
+def init_referral_commissions_db():
+    with connect() as db:
+        db.execute("""CREATE TABLE IF NOT EXISTS referral_commissions (id INTEGER PRIMARY KEY AUTOINCREMENT, deposit_id INTEGER NOT NULL, user_id INTEGER NOT NULL, level INTEGER NOT NULL, rate REAL NOT NULL, amount REAL NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(deposit_id, level))""")
+
+init_referral_commissions_db()
+
 @app.route("/vip-tasks")
 @login_required
 def vip_tasks():
@@ -699,6 +705,17 @@ def admin_approve_deposit(transaction_id):
                     "UPDATE users SET balance=balance+? WHERE id=?",
                     (txn["amount"], txn["user_id"])
                 )
+
+                current = txn["user_id"]
+                for level, rate in ((1, 0.34), (2, 0.10), (3, 0.01)):
+                    parent = db.execute("SELECT invited_by FROM users WHERE id=?", (current,)).fetchone()
+                    if not parent or not parent["invited_by"]:
+                        break
+                    current = parent["invited_by"]
+                    commission = round(float(txn["amount"]) * rate, 2)
+                    cur = db.execute("INSERT OR IGNORE INTO referral_commissions (deposit_id,user_id,level,rate,amount) VALUES (?,?,?,?,?)", (txn["id"],current,level,rate,commission))
+                    if cur.rowcount == 1:
+                        db.execute("UPDATE users SET balance=balance+? WHERE id=?", (commission,current))
 
                 # A qualifying invitee needs an approved deposit of UGX 20,000+.
                 if txn["amount"] >= 20000:
