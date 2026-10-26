@@ -707,7 +707,7 @@ def admin_approve_deposit(transaction_id):
                 )
 
                 current = txn["user_id"]
-                for level, rate in ((1, 0.34), (2, 0.10), (3, 0.01)):
+                for level, rate in ((1, 0.32), (2, 0.10), (3, 0.01)):
                     parent = db.execute("SELECT invited_by FROM users WHERE id=?", (current,)).fetchone()
                     if not parent or not parent["invited_by"]:
                         break
