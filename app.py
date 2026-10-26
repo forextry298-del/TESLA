@@ -50,6 +50,12 @@ def login_required(fn):
         return fn(*args, **kwargs)
     return wrapped
 
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return "OK", 200
+
 @app.route("/")
 def index():
     if session.get("user_id"):
