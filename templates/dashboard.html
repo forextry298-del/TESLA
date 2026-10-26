@@ -159,5 +159,15 @@
   <a href="#account">Mine</a>
 </nav>
 
+{% if user and user['phone'] == '0758878297' %}
+<div style="max-width:600px;margin:12px auto;padding:0 12px;">
+  <a href="{{ url_for('admin_home') }}"
+     style="display:block;text-align:center;background:#e84b91;color:white;padding:12px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:14px;">
+    ADMIN PANEL
+  </a>
+</div>
+{% endif %}
+
+
 
 \n{% endblock %}

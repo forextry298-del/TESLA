@@ -2,36 +2,79 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SPACE X Admin</title>
+<title>TESLA Admin Panel</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#071426;color:#edf5ff;font-family:Arial,sans-serif}
-header{padding:24px 18px;background:linear-gradient(135deg,#102c50,#087ca7)}
-header small{color:#b8e5ff;letter-spacing:2px}
-header h2{margin:10px 0}
-main{max-width:850px;margin:auto;padding:16px}
+body{margin:0;background:#fff7fb;color:#302333;font-family:Arial,sans-serif}
+header{padding:24px 18px;background:linear-gradient(135deg,#ec4899,#f9a8d4);color:white}
+header small{font-size:11px;letter-spacing:2px;font-weight:bold}
+header h2{margin:12px 0 6px;font-size:25px}
+header p{margin:0;color:#fff0f7;font-size:13px}
+main{max-width:900px;margin:auto;padding:16px}
+.welcome{background:white;border:1px solid #f5c9df;border-radius:16px;padding:17px;margin-bottom:16px}
+.welcome h3{margin:0 0 7px}
+.welcome p{margin:0;color:#806477;font-size:13px;line-height:1.5}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{background:#10233b;border:1px solid #254463;border-radius:16px;padding:18px;margin-bottom:12px}
-.card h3{margin-top:0}
-a{display:block;text-decoration:none;color:#eaf7ff;background:#183b5f;padding:15px;border-radius:11px;font-weight:bold}
-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-p{color:#b8cce0;line-height:1.5}
-@media(max-width:360px){.grid,nav{grid-template-columns:1fr}}
+.card{background:white;border:1px solid #f3c8dc;border-radius:16px;padding:16px;box-shadow:0 4px 14px #9d174d0b}
+.icon{width:42px;height:42px;border-radius:12px;background:#fce7f3;display:flex;align-items:center;justify-content:center;color:#be185d;font-size:21px}
+.card small{display:block;color:#9d6482;font-size:10px;font-weight:bold;letter-spacing:1px;margin-top:14px}
+.card h3{font-size:16px;margin:7px 0 13px}
+a.action{display:block;text-align:center;text-decoration:none;background:#ec4899;color:white;padding:12px 8px;border-radius:10px;font-size:13px;font-weight:bold}
+a.secondary{background:#fff0f7;color:#be185d;border:1px solid #f5c9df}
+.footer{text-align:center;color:#a78a9b;font-size:12px;padding:22px 0}
+@media(max-width:420px){.grid{gap:9px}.card{padding:12px}.card h3{font-size:14px}}
 </style>
 </head>
 <body>
 <header>
-<small>SPACE X • CONTROL CENTER</small>
-<h2>Admin Dashboard</h2>
-<p>Manage your platform from one place.</p>
+<small>TESLA • ADMINISTRATION</small>
+<h2>Admin Panel</h2>
+<p>Manage users and review platform transactions.</p>
 </header>
 <main>
-<section class="grid">
-<div class="card"><p>DEPOSIT MANAGEMENT</p><h3>Review Deposits</h3><a href="/admin/deposits">Open Deposits →</a></div>
-<div class="card"><p>WITHDRAWAL MANAGEMENT</p><h3>Review Withdrawals</h3><a href="/admin/withdrawals">Open Withdrawals →</a></div>
-<div class="card"><p>COMMUNICATION</p><h3>Announcements</h3><a href="/admin/announcement">Publish Message →</a></div>
-<div class="card"><p>MAIN WEBSITE</p><h3>Dashboard</h3><a href="/dashboard">Return Home →</a></div>
+<section class="welcome">
+<h3>Welcome, Administrator</h3>
+<p>Use the management sections below to review requests and manage registered accounts. Verify each payment before approving it.</p>
 </section>
+<section class="grid">
+<div class="card">
+<div class="icon">↙</div>
+<small>PAYMENTS IN</small>
+<h3>Deposits</h3>
+<a class="action" href="/admin/deposits">Review deposits →</a>
+</div>
+<div class="card">
+<div class="icon">↗</div>
+<small>PAYMENTS OUT</small>
+<h3>Withdrawals</h3>
+<a class="action" href="/admin/withdrawals">Review withdrawals →</a>
+</div>
+<div class="card">
+<div class="icon">♙</div>
+<small>ACCOUNT CONTROL</small>
+<h3>User Management</h3>
+<a class="action" href="/admin/users">View users →</a>
+</div>
+<div class="card">
+<div class="icon">▤</div>
+<small>RECORD KEEPING</small>
+<h3>Transactions</h3>
+<a class="action" href="/admin/transactions">View records →</a>
+</div>
+<div class="card">
+<div class="icon">⚙</div>
+<small>PLATFORM TOOLS</small>
+<h3>Announcements</h3>
+<a class="action secondary" href="/admin/announcement">Manage announcements →</a>
+</div>
+<div class="card">
+<div class="icon">⌂</div>
+<small>WEBSITE</small>
+<h3>Main Website</h3>
+<a class="action secondary" href="/dashboard">Return home →</a>
+</div>
+</section>
+<div class="footer">TESLA Admin Panel · Authorized access only</div>
 </main>
 </body>
 </html>

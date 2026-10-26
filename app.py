@@ -21,13 +21,31 @@ def init_db():
             password TEXT NOT NULL,
             invite_code TEXT UNIQUE NOT NULL,
             balance REAL NOT NULL DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            is_blocked INTEGER NOT NULL DEFAULT 0
         )""")
+
+        columns = {
+            row["name"] for row in db.execute("PRAGMA table_info(users)")
+        }
+        if "is_blocked" not in columns:
+            db.execute(
+                "ALTER TABLE users ADD COLUMN is_blocked INTEGER NOT NULL DEFAULT 0"
+            )
 
 def login_required(fn):
     @wraps(fn)
     def wrapped(*args, **kwargs):
-        if not session.get("user_id"):
+        uid = session.get("user_id")
+        if not uid:
+            return redirect(url_for("login"))
+        with connect() as db:
+            user = db.execute(
+                "SELECT is_blocked FROM users WHERE id=?", (uid,)
+            ).fetchone()
+        if not user or user["is_blocked"]:
+            session.clear()
+            flash("Your account is unavailable. Please contact support.")
             return redirect(url_for("login"))
         return fn(*args, **kwargs)
     return wrapped
@@ -88,6 +106,9 @@ def login():
                 "SELECT * FROM users WHERE phone=?", (phone,)
             ).fetchone()
         if user and check_password_hash(user["password"], password):
+            if user["is_blocked"]:
+                flash("Your account is blocked. Please contact support.")
+                return render_template("login.html")
             session.clear()
             session["user_id"] = user["id"]
             return redirect(url_for("dashboard"))
@@ -448,6 +469,286 @@ def my_products():
                            purchases=purchases)
 
 
+
+
+ADMIN_PHONE = "0758878297"
+
+def admin_required(fn):
+    @wraps(fn)
+    @login_required
+    def wrapped(*args, **kwargs):
+        with connect() as db:
+            user = db.execute(
+                "SELECT phone FROM users WHERE id=?",
+                (session["user_id"],)
+            ).fetchone()
+        if not user or user["phone"] != ADMIN_PHONE:
+            flash("You are not authorized to access the admin panel.")
+            return redirect(url_for("dashboard"))
+        return fn(*args, **kwargs)
+    return wrapped
+
+@app.route("/admin")
+@admin_required
+def admin_home():
+    return render_template("admin_home.html")
+
+
+@app.route("/admin/deposits")
+@admin_required
+def admin_deposits():
+    with connect() as db:
+        deposits = db.execute("""
+            SELECT t.id, t.user_id, t.amount, t.method, t.reference,
+                   t.status, t.created_at, u.phone
+            FROM transactions t
+            JOIN users u ON u.id=t.user_id
+            WHERE t.kind='deposit'
+            ORDER BY CASE WHEN t.status='pending' THEN 0 ELSE 1 END, t.id DESC
+        """).fetchall()
+    return render_template("admin_deposits.html", deposits=deposits)
+
+
+@app.route("/admin/deposits/<int:transaction_id>/approve", methods=["POST"])
+@admin_required
+def admin_approve_deposit(transaction_id):
+    db = connect()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        txn = db.execute("""
+            SELECT id, user_id, amount, status
+            FROM transactions
+            WHERE id=? AND kind='deposit'
+        """, (transaction_id,)).fetchone()
+
+        if txn is None:
+            db.rollback()
+            flash("Deposit request not found.")
+        elif txn["status"] != "pending":
+            db.rollback()
+            flash("This deposit has already been processed.")
+        else:
+            changed = db.execute("""
+                UPDATE transactions SET status='approved'
+                WHERE id=? AND kind='deposit' AND status='pending'
+            """, (transaction_id,)).rowcount
+
+            if changed != 1:
+                db.rollback()
+                flash("Deposit status changed; please refresh.")
+            else:
+                db.execute(
+                    "UPDATE users SET balance=balance+? WHERE id=?",
+                    (txn["amount"], txn["user_id"])
+                )
+                db.commit()
+                flash("Deposit approved and balance credited once.")
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+    return redirect(url_for("admin_deposits"))
+
+
+@app.route("/admin/deposits/<int:transaction_id>/reject", methods=["POST"])
+@admin_required
+def admin_reject_deposit(transaction_id):
+    with connect() as db:
+        changed = db.execute("""
+            UPDATE transactions SET status='rejected'
+            WHERE id=? AND kind='deposit' AND status='pending'
+        """, (transaction_id,)).rowcount
+        if changed:
+            flash("Deposit request rejected. No balance was credited.")
+        else:
+            flash("Request not found or already processed.")
+    return redirect(url_for("admin_deposits"))
+
+
+@app.route("/admin/withdrawals")
+@admin_required
+def admin_withdrawals():
+    with connect() as db:
+        withdrawals = db.execute("""
+            SELECT t.id, t.user_id, t.amount, t.method, t.reference,
+                   t.status, t.created_at, u.phone
+            FROM transactions t
+            JOIN users u ON u.id=t.user_id
+            WHERE t.kind='withdrawal'
+            ORDER BY CASE WHEN t.status='pending' THEN 0 ELSE 1 END, t.id DESC
+        """).fetchall()
+    return render_template("admin_withdrawals.html", withdrawals=withdrawals)
+
+
+@app.route("/admin/withdrawals/<int:transaction_id>/paid", methods=["POST"])
+@admin_required
+def admin_mark_withdrawal_paid(transaction_id):
+    db = connect()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        txn = db.execute("""
+            SELECT id, user_id, amount, status
+            FROM transactions
+            WHERE id=? AND kind='withdrawal'
+        """, (transaction_id,)).fetchone()
+
+        if txn is None:
+            db.rollback()
+            flash("Withdrawal request not found.")
+        elif txn["status"] != "pending":
+            db.rollback()
+            flash("This withdrawal has already been processed.")
+        else:
+            user = db.execute(
+                "SELECT balance FROM users WHERE id=?",
+                (txn["user_id"],)
+            ).fetchone()
+
+            if user is None or user["balance"] < txn["amount"]:
+                db.rollback()
+                flash("Insufficient balance; withdrawal was not marked paid.")
+            else:
+                changed = db.execute("""
+                    UPDATE transactions SET status='paid'
+                    WHERE id=? AND kind='withdrawal' AND status='pending'
+                """, (transaction_id,)).rowcount
+
+                if changed != 1:
+                    db.rollback()
+                    flash("Request status changed; refresh and try again.")
+                else:
+                    db.execute(
+                        "UPDATE users SET balance=balance-? WHERE id=?",
+                        (txn["amount"], txn["user_id"])
+                    )
+                    db.commit()
+                    flash("Withdrawal marked paid and balance deducted once.")
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+    return redirect(url_for("admin_withdrawals"))
+
+
+@app.route("/admin/withdrawals/<int:transaction_id>/reject", methods=["POST"])
+@admin_required
+def admin_reject_withdrawal(transaction_id):
+    with connect() as db:
+        changed = db.execute("""
+            UPDATE transactions SET status='rejected'
+            WHERE id=? AND kind='withdrawal' AND status='pending'
+        """, (transaction_id,)).rowcount
+        if changed:
+            flash("Withdrawal rejected. No balance was deducted.")
+        else:
+            flash("Request not found or already processed.")
+    return redirect(url_for("admin_withdrawals"))
+
+
+@app.route("/admin/users")
+@admin_required
+def admin_users():
+    query = request.args.get("q", "").strip()
+    with connect() as db:
+        if query:
+            users = db.execute("""
+                SELECT id, phone, balance, created_at, invite_code, is_blocked
+                FROM users WHERE phone LIKE ?
+                ORDER BY id DESC LIMIT 100
+            """, ("%" + query + "%",)).fetchall()
+        else:
+            users = db.execute("""
+                SELECT id, phone, balance, created_at, invite_code, is_blocked
+                FROM users ORDER BY id DESC LIMIT 100
+            """).fetchall()
+    return render_template("admin_users.html", users=users, query=query)
+
+
+@app.route("/admin/users/<int:user_id>/block", methods=["POST"])
+@admin_required
+def admin_block_user(user_id):
+    with connect() as db:
+        target = db.execute(
+            "SELECT id, phone FROM users WHERE id=?", (user_id,)
+        ).fetchone()
+        if not target:
+            flash("User not found.")
+        elif target["phone"] == ADMIN_PHONE:
+            flash("The administrator account cannot be blocked here.")
+        else:
+            db.execute("UPDATE users SET is_blocked=1 WHERE id=?", (user_id,))
+            flash("User blocked.")
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/admin/users/<int:user_id>/unblock", methods=["POST"])
+@admin_required
+def admin_unblock_user(user_id):
+    with connect() as db:
+        changed = db.execute(
+            "UPDATE users SET is_blocked=0 WHERE id=?", (user_id,)
+        ).rowcount
+    flash("User unblocked." if changed else "User not found.")
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/admin/users/<int:user_id>/reset-password", methods=["GET", "POST"])
+@admin_required
+def admin_reset_password(user_id):
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        confirm = request.form.get("confirm", "")
+        if len(password) < 8:
+            flash("Use a password of at least 8 characters.")
+        elif password != confirm:
+            flash("The passwords do not match.")
+        else:
+            with connect() as db:
+                target = db.execute(
+                    "SELECT id, phone FROM users WHERE id=?", (user_id,)
+                ).fetchone()
+                if not target:
+                    flash("User not found.")
+                    return redirect(url_for("admin_users"))
+                if target["phone"] == ADMIN_PHONE:
+                    flash("Use the normal account recovery process for the administrator account.")
+                    return redirect(url_for("admin_users"))
+                db.execute(
+                    "UPDATE users SET password=? WHERE id=?",
+                    (generate_password_hash(password), user_id)
+                )
+            flash("Password reset successfully. Give the new password directly to the verified account owner.")
+            return redirect(url_for("admin_users"))
+
+    with connect() as db:
+        target = db.execute(
+            "SELECT id, phone FROM users WHERE id=?", (user_id,)
+        ).fetchone()
+    if not target:
+        flash("User not found.")
+        return redirect(url_for("admin_users"))
+    return render_template("admin_reset_password.html", target=target)
+
+
+@app.route("/admin/users/<int:user_id>/transactions")
+@admin_required
+def admin_user_transactions(user_id):
+    with connect() as db:
+        target = db.execute(
+            "SELECT id, phone, balance FROM users WHERE id=?", (user_id,)
+        ).fetchone()
+        rows = db.execute("""
+            SELECT kind, amount, method, reference, status, created_at
+            FROM transactions WHERE user_id=? ORDER BY id DESC LIMIT 200
+        """, (user_id,)).fetchall()
+    if not target:
+        flash("User not found.")
+        return redirect(url_for("admin_users"))
+    return render_template(
+        "admin_user_transactions.html", target=target, transactions=rows
+    )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
