@@ -1,23 +1,23 @@
 {% extends "base.html" %}
-{% block title %}VIP Tasks | Space X{% endblock %}
+{% block title %}Task Center | Space X{% endblock %}
 {% block content %}
 <style>
-.vip-page{min-height:100vh;background:#07101b;color:#f5f7fb;padding:20px 15px 100px;font-family:Arial,sans-serif;max-width:650px;margin:auto}
+.vip-page{min-height:100vh;background:#fff8fc;color:#3b2432;padding:20px 15px 100px;font-family:Arial,sans-serif;max-width:650px;margin:auto}
 .vip-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.vip-head a{color:#20caff;text-decoration:none;font-size:28px}
-.vip-card{background:#111c2a;border:1px solid #26374a;border-radius:16px;padding:18px;margin-bottom:15px}
-.vip-title{font-size:22px;font-weight:800;color:#20caff}
-.vip-muted{color:#a5b5c8;font-size:13px;line-height:1.6}
+.vip-head a{color:#db2777;text-decoration:none;font-size:28px}
+.vip-card{background:#ffffff;border:1px solid #f5c9df;border-radius:16px;padding:18px;margin-bottom:15px}
+.vip-title{font-size:22px;font-weight:800;color:#db2777}
+.vip-muted{color:#8b6479;font-size:13px;line-height:1.6}
 .vip-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-.vip-stat{background:#07101b;border-radius:12px;padding:14px}
-.vip-stat strong{display:block;font-size:23px;color:#20caff;margin-top:8px;overflow-wrap:anywhere}
-.vip-btn{display:block;width:100%;box-sizing:border-box;border:0;border-radius:10px;padding:13px;background:#19b9c9;color:#071018;text-align:center;text-decoration:none;font-weight:800;margin-top:12px}
-.vip-row{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #26374a}
+.vip-stat{background:#fff8fc;border-radius:12px;padding:14px}
+.vip-stat strong{display:block;font-size:23px;color:#db2777;margin-top:8px;overflow-wrap:anywhere}
+.vip-btn{display:block;width:100%;box-sizing:border-box;border:0;border-radius:10px;padding:13px;background:#ec4899;color:#ffffff;text-align:center;text-decoration:none;font-weight:800;margin-top:12px}
+.vip-row{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #f5c9df}
 .vip-row:last-child{border-bottom:0}
-.vip-code{font-size:20px;letter-spacing:2px;color:#20caff;overflow-wrap:anywhere;margin-top:8px}
+.vip-code{font-size:20px;letter-spacing:2px;color:#db2777;overflow-wrap:anywhere;margin-top:8px}
 </style>
 <div class="vip-page">
-  <div class="vip-head"><a href="{{ url_for('profile') }}">‹</a><div><div class="vip-title">VIP Tasks</div><div class="vip-muted">Invite friends and earn Level 1 rewards</div></div></div>
+  <div class="vip-head"><a href="{{ url_for('profile') }}">‹</a><div><div class="vip-title">Task Center</div><div class="vip-muted">Invite friends and earn Level 1 rewards</div></div></div>
   <section class="vip-card">
     <div class="vip-title">Level 1 Invitation Task</div>
     <div class="vip-muted">Invite a new member using your personal referral link. A member qualifies after their first deposit is approved. Each member counts once.</div>
@@ -43,7 +43,7 @@
     <p class="vip-muted">Rewards are credited to your Balance after deposit approval. Pending or rejected deposits do not qualify.</p>
   </section>
   <a class="vip-btn" href="{{ url_for('invite') }}">Invite Friends</a>
-  <a class="vip-btn" href="{{ url_for('my_team') }}" style="background:#182536;color:#20caff">View My Team</a>
+  <a class="vip-btn" href="{{ url_for('my_team') }}" style="background:#fff4fa;color:#db2777">View My Team</a>
 </div>
 <script>
 function copyVip(id){

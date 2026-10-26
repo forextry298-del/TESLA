@@ -273,6 +273,75 @@ def init_transactions_db():
 
 init_transactions_db()
 
+
+def init_task_rewards_db():
+    with connect() as db:
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS task_rewards (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                task_code TEXT NOT NULL,
+                amount REAL NOT NULL CHECK(amount > 0),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, task_code),
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        """)
+
+init_task_rewards_db()
+
+@app.route("/vip-tasks")
+@login_required
+def vip_tasks():
+    target = 3
+    reward_amount = 5000
+    user_id = session["user_id"]
+
+    with connect() as db:
+        user = db.execute(
+            "SELECT id, invite_code FROM users WHERE id=?", (user_id,)
+        ).fetchone()
+
+        if not user:
+            session.clear()
+            return redirect(url_for("login"))
+
+        qualified_count = db.execute("""
+            SELECT COUNT(*)
+            FROM users invited
+            WHERE invited.invited_by=?
+              AND EXISTS (
+                  SELECT 1 FROM transactions t
+                  WHERE t.user_id=invited.id
+                    AND t.kind='deposit'
+                    AND t.status='approved'
+                    AND t.amount >= 20000
+              )
+        """, (user_id,)).fetchone()[0]
+
+        reward = db.execute("""
+            SELECT amount FROM task_rewards
+            WHERE user_id=? AND task_code='LV1_INVITE_3'
+        """, (user_id,)).fetchone()
+
+    referral_code = user["invite_code"]
+    referral_link = request.url_root.rstrip("/") + url_for(
+        "register"
+    ) + "?invitation=" + referral_code
+
+    return render_template(
+        "vip_tasks.html",
+        qualified_count=qualified_count,
+        reward_total=reward["amount"] if reward else 0,
+        reward_rate=0,
+        referral_code=referral_code,
+        referral_link=referral_link,
+        target=target,
+        reward_amount=reward_amount,
+        reward_claimed=bool(reward)
+    )
+
+
 @app.route("/transactions")
 @login_required
 def transactions():
@@ -534,6 +603,7 @@ def admin_deposits():
 @admin_required
 def admin_approve_deposit(transaction_id):
     db = connect()
+    reward_paid = False
     try:
         db.execute("BEGIN IMMEDIATE")
         txn = db.execute("""
@@ -562,8 +632,48 @@ def admin_approve_deposit(transaction_id):
                     "UPDATE users SET balance=balance+? WHERE id=?",
                     (txn["amount"], txn["user_id"])
                 )
+
+                # A qualifying invitee needs an approved deposit of UGX 20,000+.
+                if txn["amount"] >= 20000:
+                    invitee = db.execute(
+                        "SELECT invited_by FROM users WHERE id=?",
+                        (txn["user_id"],)
+                    ).fetchone()
+
+                    if invitee and invitee["invited_by"]:
+                        inviter_id = invitee["invited_by"]
+
+                        qualified = db.execute("""
+                            SELECT COUNT(*)
+                            FROM users u
+                            WHERE u.invited_by=?
+                              AND EXISTS (
+                                  SELECT 1 FROM transactions t
+                                  WHERE t.user_id=u.id
+                                    AND t.kind='deposit'
+                                    AND t.status='approved'
+                                    AND t.amount >= 20000
+                              )
+                        """, (inviter_id,)).fetchone()[0]
+
+                        if qualified >= 3:
+                            cur = db.execute("""
+                                INSERT OR IGNORE INTO task_rewards
+                                    (user_id, task_code, amount)
+                                VALUES (?, 'LV1_INVITE_3', 5000)
+                            """, (inviter_id,))
+
+                            if cur.rowcount == 1:
+                                db.execute(
+                                    "UPDATE users SET balance=balance+5000 WHERE id=?",
+                                    (inviter_id,)
+                                )
+                                reward_paid = True
+
                 db.commit()
-                flash("Deposit approved and balance credited once.")
+                flash("Deposit approved and depositor balance credited once.")
+                if reward_paid:
+                    flash("LV1 task completed! UGX 5,000 reward credited to inviter balance.")
     except Exception:
         db.rollback()
         raise
